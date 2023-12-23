@@ -1,0 +1,71 @@
+#!/usr/bin/php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use GetOpt\GetOpt;
+use GetOpt\Option;
+use Webmozart\PathUtil\Path;
+
+($getopt = new GetOpt('r:o:p:s::t:d:i:'))->parse();
+$options  = $getopt->getOptions();
+$operands = $getopt->getOperands();
+if (isset($options['s'])) {
+    $project = $options['p'] ?? __DIR__;
+    $static = $options['t'] ?? __DIR__;
+    $port = $options['s'] != 1 ? $options['s'] : 1337;
+    $project = new iHTML\Project\Project(dir($project));
+    print 'Available paths:'."\n\n";
+    $project->get()->map(function ($resource) use ($port) {
+        print "  http://127.0.0.1:{$port}/{$resource->output}\n";
+    });
+    print "\n--\n\n";
+    $loop = React\EventLoop\Factory::create();
+    $server = new React\Http\Server($loop, function (Psr\Http\Message\ServerRequestInterface $request) use ($project, $static, $port, $options) {
+        if ($resource = $project->get()->first(function ($res) use ($request) {
+            return '/'.$res->output === $request->getUri()->getPath();
+        })) {
+            $resource->ccs->applyTo($resource->document);
+            $body = $resource->document->render(null, $options['i'] ?? null)->get();
+            print "Rendered http://127.0.0.1:{$port}{$request->getUri()->getPath()}\n";
+            return new React\Http\Message\Response(200, ['Content-Type' => 'text/html'], $body);
+        }
+
+        if (file_exists($static.'/'.$request->getUri()->getPath())) {
+            print "Rendered http://127.0.0.1:{$port}{$request->getUri()->getPath()}\n";
+            return new React\Http\Message\Response(200, ['Content-Type' => getMimetype($static.'/'.$request->getUri()->getPath())], file_get_contents($static.'/'.$request->getUri()->getPath()));
+        }
+
+        print "Rendered http://127.0.0.1:{$port}{$request->getUri()->getPath()}\n";
+        return new React\Http\Message\Response(404, ['Content-Type' => 'text/plain'], "404 - Page not found\n");
+    });
+    print 'Server loaded.'.PHP_EOL;
+    $socket = new React\Socket\Server($port, $loop);
+    $server->listen($socket);
+    print "Listening to http://127.0.0.1:{$port}...".PHP_EOL.PHP_EOL;
+    $loop->run();
+} elseif (isset($options['p'])) {
+    $project = $options['p'] ?? __DIR__;
+    $output = $options['o'] ?? '.';
+    $pr = new iHTML\Project\Project(dir($project));
+    $pr->render(new SplFileInfo(Path::makeAbsolute($output, getcwd())), $options['i'] ?? null);
+} elseif (isset($operands[0]) && isset($operands[1])) {
+    $document = new iHTML\Document\Document($operands[0]);
+    $ccs = new iHTML\Ccs\Ccs();
+    $ccs->setFile($operands[1]);
+    $ccs->applyTo($document);
+    $document->render($options['o'] ?? STDOUT, $options['i'] ?? null);
+    $document = new iHTML\Document\Document($operands[0]);
+    $ccs = new iHTML\Ccs\Ccs();
+    $ccs->setCode($options['r'], $options['d'] ?? getcwd());
+    $ccs->applyTo($document);
+    $document->render($options['o'] ?? STDOUT, $options['i'] ?? null);
+} elseif (isset($operands[0])) {
+    $document = new iHTML\Document\Document($operands[0]);
+    $ccs = new iHTML\Ccs\Ccs();
+    $ccs->setCode(file_get_contents('php://stdin'), $options['d'] ?? getcwd());
+    $ccs->applyTo($document);
+    $document->render($options['o'] ?? STDOUT, $options['i'] ?? null);
+} else {
+    print 'Please, insert template file'."\n\n";
+}

@@ -1,0 +1,40 @@
+{
+    "name": "davidedexuno/ihtml-php",
+    "description": "iHTML template engine (php version)",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Davide Del Medico",
+            "email": "davide.dexuno@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "bin": [
+        "ihtml"
+    ],
+    "require": {
+        "php": ">=8.2",
+        "danog/class-finder": "^0.4.8",
+        "erusev/parsedown": "^1.7",
+        "jbbcode/jbbcode": "^1.4",
+        "masterminds/html5": "^2.8",
+        "react/http": "^1.9",
+        "react/react": "^1.4",
+        "sabberworm/php-css-parser": "^8.4",
+        "symfony/css-selector": "^7.0",
+        "symfony/dom-crawler": "^7.0",
+        "ulrichsg/getopt-php": "^4.0",
+        "illuminate/support": "^8.83",
+        "symfony/yaml": "^7.0",
+        "webmozart/assert": "^1.11",
+        "symfony/filesystem": "^v7"
+    },
+    "autoload": {
+        "psr-4": {
+            "iHTML\\": "src/"
+        },
+        "files": [
+            "libihtml.php"
+        ]
+    }
+}
