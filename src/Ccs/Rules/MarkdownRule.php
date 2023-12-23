@@ -2,12 +2,15 @@
 
 namespace iHTML\Ccs\Rules;
 
-class MarkdownRule extends \iHTML\Ccs\CcsRule
+use iHTML\Ccs\CcsRule;
+
+class MarkdownRule extends CcsRule
 {
-    public static function rule():   string
+    public static function rule(): string
     {
         return 'markdown';
     }
+
     public static function method(): string
     {
         return 'markdown';

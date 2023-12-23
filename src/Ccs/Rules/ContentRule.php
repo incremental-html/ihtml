@@ -2,12 +2,15 @@
 
 namespace iHTML\Ccs\Rules;
 
-class ContentRule extends \iHTML\Ccs\CcsRule
+use iHTML\Ccs\CcsRule;
+
+class ContentRule extends CcsRule
 {
-    public static function rule():   string
+    public static function rule(): string
     {
         return 'content';
     }
+
     public static function method(): string
     {
         return 'content';

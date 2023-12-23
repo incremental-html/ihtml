@@ -2,12 +2,15 @@
 
 namespace iHTML\Ccs\Rules;
 
-class BorderRule extends \iHTML\Ccs\CcsRule
+use iHTML\Ccs\CcsRule;
+
+class BorderRule extends CcsRule
 {
-    public static function rule():   string
+    public static function rule(): string
     {
         return 'border';
     }
+
     public static function method(): string
     {
         return 'border';

@@ -3,19 +3,11 @@
 
 namespace iHTML\Ccs;
 
-use iHTML\Document\Document;
-use iHTML\Document\DocumentQueryAttr;
-use iHTML\Document\DocumentQueryClass;
-use iHTML\Document\DocumentQueryStyle;
-use Exception;
-use SplFileObject;
-use Directory;
-use danog\ClassFinder\ClassFinder;
-use CcsRuleDecoder;
+use iHTML\Messages\File;
 
-class CcsFile extends CcsHandler
+class CcsFile extends Ccs
 {
-    public function __construct(SplFileObject $file)
+    public function __construct(File $file)
     {
         parent::__construct();
         $this->code = $file->fread($file->getSize() + 1);

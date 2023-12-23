@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": ">=8.2",
+        "ext-dom": "*",
         "danog/class-finder": "^0.4.8",
         "erusev/parsedown": "^1.7",
         "jbbcode/jbbcode": "^1.4",
@@ -32,9 +33,6 @@
     "autoload": {
         "psr-4": {
             "iHTML\\": "src/"
-        },
-        "files": [
-            "libihtml.php"
-        ]
+        }
     }
 }

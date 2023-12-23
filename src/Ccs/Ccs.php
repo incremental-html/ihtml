@@ -3,25 +3,25 @@
 
 namespace iHTML\Ccs;
 
+use Directory;
+use Exception;
 use iHTML\Document\Document;
-use iHTML\Document\DocumentQueryAttr;
+use iHTML\Document\DocumentQueryAttribute;
 use iHTML\Document\DocumentQueryClass;
 use iHTML\Document\DocumentQueryStyle;
-use Exception;
-use SplFileObject;
-use Directory;
-use danog\ClassFinder\ClassFinder;
-use Webmozart\PathUtil\Path;
+use iHTML\Messages\File;
+use Sabberworm\CSS\Value\CSSString;
+use Symfony\Component\Filesystem\Path;
 
-abstract class CcsHandler
+abstract class Ccs
 {
     protected string $code;
     protected Directory $root;
 
-    private $rules = [];
-    private $attrRules = [];
-    private $styleRules = [];
-    private $classRules = [];
+    private array $rules = [];
+    private array $attrRules = [];
+    private array $styleRules = [];
+    private array $classRules = [];
 
     public function __construct()
     {
@@ -32,7 +32,7 @@ abstract class CcsHandler
     }
 
 
-    public function applyTo(Document $document): CcsHandler
+    public function applyTo(Document $document): Ccs
     {
         $parser =
             (new CcsParser)
@@ -48,25 +48,25 @@ abstract class CcsHandler
                         $ruleSubj = $ruleComponents->name;
                         switch ($ruleType) {
                             case 'node':
-                                ('\\iHTML\\Ccs\\Rules\\'.$this->rules[ $ruleName ])::exec($query, $rule->values, $rule->content);
-                            break;
+                                ('\\iHTML\\Ccs\\Rules\\' . $this->rules[$ruleName])::exec($query, $rule->values, $rule->content);
+                                break;
                             case 'attr':
-                                $this->attrRules[ $ruleName ]($query, $ruleSubj, $rule->values, $rule->content);
-                            break;
+                                $this->attrRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                                break;
                             case 'style':
-                                $this->styleRules[ $ruleName ]($query, $ruleSubj, $rule->values, $rule->content);
-                            break;
+                                $this->styleRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                                break;
                             case 'class':
-                                $this->classRules[ $ruleName ]($query, $ruleSubj, $rule->values, $rule->content);
-                            break;
+                                $this->classRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                                break;
                             default:
                                 throw new Exception("Rule type {$ruleType} not defined.");
-                            break;
+                                break;
                         }
                     }
                 })
                 ->setOnImport(function (string $file) use ($document) {
-                    $ccs = new CcsFile(new SplFileObject(Path::makeAbsolute($file, $this->root->path)));
+                    $ccs = new CcsFile(new File(Path::makeAbsolute($file, $this->root->path)));
                     $ccs->applyTo($document);
                 })
                 ->parse($this->code, $this->root);
@@ -106,12 +106,12 @@ abstract class CcsHandler
     {
         $this->rules =
             // scans rules directory
-            collect( scandir( __DIR__.'/Rules') )
-            ->diff( ['.', '..'] )
-            // gets class name from filename
-            ->map( fn ($file) => Path::getFilenameWithoutExtension($file) )
-            // maps in form of [ rule name => class ]
-            ->mapWithKeys( fn ($rule) => [ ('\\iHTML\\Ccs\\Rules\\'.$rule)::rule() => $rule ] );
+            collect(scandir(__DIR__ . '/Rules'))
+                ->diff(['.', '..'])
+                // gets class name from filename
+                ->map(fn($file) => Path::getFilenameWithoutExtension($file))
+                // maps in form of [ rule name => class ]
+                ->mapWithKeys(fn($rule) => [('\\iHTML\\Ccs\\Rules\\' . $rule)::rule() => $rule]);
     }
 
     private function loadAttrRules()
@@ -126,7 +126,7 @@ abstract class CcsHandler
                 $query->attr($name)->display(...$values);
             },
             'visibility' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values, ['visible' => DocumentQueryAttr::VISIBLE, 'hidden' => DocumentQueryAttr::HIDDEN]);
+                $values = $this->solveValues($values, ['visible' => DocumentQueryAttribute::VISIBLE, 'hidden' => DocumentQueryAttribute::HIDDEN]);
                 $query->attr($name)->visibility(...$values);
             },
             // 'white-space' =>
@@ -169,10 +169,10 @@ abstract class CcsHandler
     private function solveValues($values, array $constants = [])
     {
         return array_map(function ($value) use ($constants) {
-            if ($value instanceof \Sabberworm\Css\Value\CssString) {
+            if ($value instanceof CssString) {
                 return $value->getString();
-            } elseif (is_string($value) && isset($constants[ $value ])) {
-                return $constants[ $value ];
+            } elseif (is_string($value) && isset($constants[$value])) {
+                return $constants[$value];
             } else {
                 throw new Exception("$value unrecognized");
             }

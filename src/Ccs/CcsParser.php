@@ -3,6 +3,7 @@
 
 namespace iHTML\Ccs;
 
+use iHTML\Messages\File;
 use Sabberworm\CSS;
 use Exception;
 use Closure;
@@ -66,7 +67,7 @@ class CcsParser
         return $this;
     }
 
-    public function inheritanceFile(\SplFileObject $file): array
+    public function inheritanceFile(File $file): array
     {
         return $this->inheritanceCode($file->fread($file->getSize() + 1), dir($file->getPath()));
     }

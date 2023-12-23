@@ -2,23 +2,28 @@
 
 namespace iHTML\Ccs\Rules;
 
-class TexttransformRule extends \iHTML\Ccs\CcsRule
+use iHTML\Ccs\CcsRule;
+use iHTML\Document\Modifiers\TextTransformModifier;
+
+class TexttransformRule extends CcsRule
 {
-    public static function rule():      string
+    public static function rule(): string
     {
         return 'text-transform';
     }
-    public static function method():    string
+
+    public static function method(): string
     {
         return 'textTransform';
     }
+
     public static function constants(): array
     {
         return parent::constants() + [
-        'uppercase'  => \iHTML\Document\Modifiers\TextTransformModifier::UPPERCASE,
-        'lowercase'  => \iHTML\Document\Modifiers\TextTransformModifier::LOWERCASE,
-        'capitalize' => \iHTML\Document\Modifiers\TextTransformModifier::CAPITALIZE,
-        'none'       => \iHTML\Document\Modifiers\TextTransformModifier::NONE,
-    ];
+                'uppercase' => TextTransformModifier::UPPERCASE,
+                'lowercase' => TextTransformModifier::LOWERCASE,
+                'capitalize' => TextTransformModifier::CAPITALIZE,
+                'none' => TextTransformModifier::NONE,
+            ];
     }
 }

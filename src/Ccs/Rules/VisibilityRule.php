@@ -2,21 +2,26 @@
 
 namespace iHTML\Ccs\Rules;
 
-class VisibilityRule extends \iHTML\Ccs\CcsRule
+use iHTML\Ccs\CcsRule;
+use iHTML\Document\Modifiers\VisibilityModifier;
+
+class VisibilityRule extends CcsRule
 {
-    public static function rule():      string
+    public static function rule(): string
     {
         return 'visibility';
     }
-    public static function method():    string
+
+    public static function method(): string
     {
         return 'visibility';
     }
+
     public static function constants(): array
     {
         return [
-                'visible' => \iHTML\Document\Modifiers\VisibilityModifier::VISIBLE,
-                'hidden'  => \iHTML\Document\Modifiers\VisibilityModifier::HIDDEN,
+            'visible' => VisibilityModifier::VISIBLE,
+            'hidden' => VisibilityModifier::HIDDEN,
         ];
     }
 }

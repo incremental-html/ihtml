@@ -3,17 +3,11 @@
 
 namespace iHTML\Ccs;
 
-use iHTML\Document\Document;
-use iHTML\Document\DocumentQueryAttr;
-use iHTML\Document\DocumentQueryClass;
-use iHTML\Document\DocumentQueryStyle;
-use Exception;
-use SplFileObject;
-use Directory;
-use danog\ClassFinder\ClassFinder;
 use CcsRuleDecoder;
+use Directory;
+use iHTML\Document\DocumentQueryAttr;
 
-class CcsChunk extends CcsHandler
+class CcsChunk extends Ccs
 {
     public function __construct(string $code, Directory $root)
     {
