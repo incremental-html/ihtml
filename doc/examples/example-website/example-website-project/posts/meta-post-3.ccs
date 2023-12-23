@@ -1,0 +1,29 @@
+
+title {
+	text: "Servizi - HappyTec";
+}
+
+.menu-primary .menu-item {
+	current-menu-item: hidden;
+	current_page_item: hidden;
+}
+.menu-primary .menu-item.menu-servizi {
+	current-menu-item: visible;
+	current_page_item: visible;
+}
+
+.entry-title {
+	style-font-style-display: none;
+}
+.site-inner .content .entry-title {
+	text: "Servizi";
+}
+.site-inner .content .wp-post-image {
+	attr-src: "http://www.happytec.it/wp-content/uploads/2016/11/Servizi.png";
+
+}
+.site-inner .content .entry-content {
+	display: url('body-post-3');
+}
+
+

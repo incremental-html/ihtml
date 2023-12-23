@@ -1,0 +1,18 @@
+
+.site-inner .content .entry-content > p:nth-of-type(3)
+{
+
+	content: "<em><strong>Smartphone</strong> </em>– Sostituzione display, connettori, schede elettroniche. Supporto ed assistenza a cellulari di qualsiasi marca e modello (Samsung, IPhone, Huawei, ecc ).<br>";
+
+}
+
+.site-inner .content .entry-content > p:nth-of-type(3)
+{
+
+	content: "<em><strong>{$ass.title}</strong> </em>– {$ass.desc}<br>";
+
+	/* to keep after, because it resets selection */
+	display: "{foreach $assistenza as $ass}" display "{/foreach}";
+
+}
+

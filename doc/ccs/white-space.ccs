@@ -1,0 +1,15 @@
+
+
+/* WHITE-SPACE */
+head {
+	white-space: normal;
+}
+
+body {
+	white-space: pre-line;
+}
+
+pre, script, style {
+	white-space: pre;
+}
+

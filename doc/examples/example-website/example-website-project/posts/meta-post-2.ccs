@@ -1,0 +1,26 @@
+
+title {
+	text: "Telefonia - HappyTec" "text";
+}
+
+.menu-primary .menu-item {
+	current-menu-item: hidden;
+	current_page_item: hidden;
+}
+.menu-primary .menu-item.menu-telefonia {
+	current-menu-item: visible;
+	current_page_item: visible;
+}
+
+.site-inner .content .entry-title {
+	text: "Telefonia";
+}
+.site-inner .content .wp-post-image {
+	attr-src: "http://www.happytec.it/wp-content/uploads/2016/11/Telefonia.png";
+
+}
+.site-inner .content .entry-content {
+	display: url('body-post-2');
+}
+
+
