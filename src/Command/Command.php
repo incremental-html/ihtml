@@ -6,15 +6,11 @@ namespace iHTML\Command;
 use Exception;
 use GetOpt\GetOpt;
 use iHTML\Ccs\Ccs;
-use iHTML\Ccs\CcsChunk;
-use iHTML\Ccs\CcsFile;
 use iHTML\Document\Document;
 use iHTML\Filesystem\FileDirectory;
 use iHTML\Filesystem\FileDirectoryExistent;
-use iHTML\Filesystem\FileRegular;
+use iHTML\Filesystem\FileRegularExistent;
 use iHTML\Project\Project;
-use SplFileInfo;
-use Symfony\Component\Filesystem\Path;
 use Throwable;
 
 class Command
@@ -31,17 +27,23 @@ class Command
 
         try {
             switch (true) {
+                /**
+                 * Server mode
+                 */
                 case isset($options['s']):
-                    // $port = $options['s'] != 1 ? intval($options['s']) : 1337;
-                    // $project = $options['p']; // TODO: add default
-                    // $static = $options['t']; // TODO: add default
-                    // self::startServer(
-                    //     $port,
-                    //     $project,
-                    //     $static,
-                    // );
+                     $port = $options['s'] != 1 ? $options['s'] : '1337';
+                     $project = $options['p']; // TODO: add default
+                     $static = $options['t']; // TODO: add default
+                     self::startServer(
+                         $port,
+                         $project,
+                         $static,
+                     );
                     break;
                 case isset($options['p']):
+                    /**
+                     * Compile project
+                     */
                     $project = $options['p']; // TODO: add default on $options['p'] != 1
                     $output = $options['o']; // TODO: add default
                     $index = $options['i'] ?? null;
@@ -52,17 +54,20 @@ class Command
                     );
                     break;
                 case isset($operands[0]) && isset($operands[1]):
-                    $documentFile = $operands[0];
-                    $ccsFile = $operands[1];
-                    $output1 = $options['o'] ?? null;
+                    /**
+                     * Compile single file
+                     */
+                    $documentFile = (string)$operands[0];
+                    $ccsFile = (string)$operands[1];
+                    $output = $options['o'] ?? null;
                     self::compileFile(
                         $documentFile,
                         $ccsFile,
-                        $output1,
+                        $output,
                     );
                     break;
                 case isset($operands[0]) && isset($options['r']):
-                    $documentFile = $operands[0];
+                    $documentFile = (string)$operands[0];
                     $ccsCode = $options['r'];
                     $ccsRoot = $options['d']; // TODO: add default
                     $output = $options['o'] ?? null;
@@ -74,7 +79,7 @@ class Command
                     );
                     break;
                 case isset($operands[0]):
-                    $documentFile = $operands[0];
+                    $documentFile = (string)$operands[0];
                     $ccsRoot = $options['d']; // TODO: add default
                     $output = $options['o'] ?? null;
                     self::compileFromStandardInput(
@@ -146,16 +151,20 @@ class Command
     }
 
     private static function compileFile(
-        mixed   $documentFile,
-        mixed   $ccsFile,
+        string  $documentFile,
+        string  $ccsFile,
         ?string $output,
     ): void
     {
+        $documentFile = new FileRegularExistent($documentFile, getcwd());
+        $ccsFile = new FileRegularExistent($ccsFile, getcwd());
         $document = new Document($documentFile);
-        $ccs = Ccs::fromFile(new FileRegular($ccsFile));
+        $ccs = Ccs::fromFile($ccsFile);
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save(new FileRegular($output));
+            $document->save($output, getcwd());
+        } else {
+            $document->print();
         }
     }
 
@@ -166,11 +175,15 @@ class Command
         ?string $output,
     ): void
     {
-        $document = new Document(File($documentFile));
-        $ccs = new CcsChunk($ccsCode, dir($ccsRoot));
+        $documentFile = new FileRegularExistent($documentFile, getcwd());
+        $ccsRoot = new FileDirectoryExistent($ccsRoot);
+        $document = new Document($documentFile);
+        $ccs = Ccs::fromChunk($ccsCode, $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save(new FileRegular($output));
+            $document->save($output, getcwd());
+        } else {
+            $document->print();
         }
     }
 
@@ -180,15 +193,15 @@ class Command
         ?string $output,
     ): void
     {
+        $documentFile = new FileRegularExistent($documentFile, getcwd());
         $document = new Document($documentFile);
-        $ccs = Ccs::fromChunk(
-            file_get_contents('php://stdin'),
-            $ccsRoot
-        );
+        $ccsRoot = new FileDirectoryExistent($ccsRoot);
+        $ccs = Ccs::fromChunk(file_get_contents('php://stdin'), $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
-
-            $document->save($output);
+            $document->save($output, getcwd());
+        } else {
+            $document->print();
         }
     }
 }

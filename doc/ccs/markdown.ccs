@@ -1,8 +1,0 @@
-
-
-/* MARKDOWN */
-.site-inner .content .entry-title {
-	markdown: "_Telefonia_";
-}
-
-

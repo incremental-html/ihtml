@@ -52,7 +52,7 @@ class DocumentQueryStyle
                             $newRules += $valueStyle;
                         }
                     } else {
-                        $newRules[$n] = $rules[$n];
+                        $newRules[$n] = $v;
                     }
                 }
                 $rules = $newRules;

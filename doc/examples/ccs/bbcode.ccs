@@ -1,0 +1,4 @@
+/* BBCODE */
+.site-inner .content .entry-content {
+	bbcode: "The default codes include: [b]bold[/b], [i]italics[/i], [u]underlining[/u], [url=http://jbbcode.com]links[/url], [color=red]color![/color] and more.";
+}

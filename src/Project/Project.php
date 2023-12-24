@@ -43,12 +43,12 @@ class Project
             /** @var ProjectRow $projectRow */
             $ccs = $projectRow->getCcs();
             $document = $projectRow->getDocument();
-             $ccs->applyTo($document);
+            $ccs->applyTo($document);
             $document->render();
             $document->save(
                 $projectRow->getOutput(),
                 $outputDir,
-                ...($index?[$index]:[])
+                ...($index ? [$index] : [])
             );
         });
     }

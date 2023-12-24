@@ -1,0 +1,7 @@
+/* VISIBILITY */
+.site-inner .content .entry-title {
+	visibility: hidden;
+}
+.site-inner .content .entry-title {
+	visibility: visible;
+}

@@ -1,0 +1,10 @@
+/* TEXT-TRANSFORM */
+.site-inner .content .entry-content {
+	text-transform: uppercase;
+}
+.site-inner .content .entry-content h2 {
+	text-transform: capitalize;
+}
+.site-inner .content .entry-content .post-edit-link {
+	text-transform: lowercase;
+}

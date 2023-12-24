@@ -1,0 +1,6 @@
+.site-inner .content .entry-content
+{
+	/*border: "A" "b", "c" "d";*/
+	/*background: url(img_flwr.gif) right bottom no-repeat, url(paper.gif) left top repeat;*/
+}
+

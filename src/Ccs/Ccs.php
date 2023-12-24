@@ -29,6 +29,9 @@ class Ccs
         return new self($code, $root);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function fromFile(FileRegularExistent $file): Ccs
     {
         return new self($file->contents(), $file->getPath());

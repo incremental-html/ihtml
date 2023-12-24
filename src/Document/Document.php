@@ -14,12 +14,14 @@ use Symfony\Component\Filesystem\Path;
 
 class Document
 {
+    private HTML5 $parser;
     private DOMDocument $domDocument;
     private array $modifiers = [];
 
     public function __construct(FileRegular $html)
     {
-        $this->domDocument = (new HTML5)->load($html, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
+        $this->parser = new HTML5;
+        $this->domDocument = $this->parser->load($html, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
         // LOAD INTERNAL CCS
         // <link rel="contentsheet" href="..."> ...
         foreach ($this('link[rel="contentsheet"][href]') as $result) {
@@ -62,22 +64,20 @@ class Document
             $output = $output . $index;
         }
         $output = new FileRegular($output, $outputDir);
-        if (!empty($output->getPath()) && !file_exists($output->getPath())) {
-            mkdir($output->getPath(), 0777, true);
-        }
-        (new HTML5)->save($this->domDocument, $output);
+        $output->getPath()->create();
+        $this->parser->save($this->domDocument, $output);
         return $this;
     }
 
     public function print(): Document
     {
-        print (new HTML5)->saveHTML($this->domDocument);
+        print $this->parser->saveHTML($this->domDocument);
         return $this;
     }
 
     public function get(): string
     {
-        return (new HTML5)->saveHTML($this->domDocument);
+        return $this->parser->saveHTML($this->domDocument);
     }
 
     /**

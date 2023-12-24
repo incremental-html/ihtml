@@ -53,8 +53,8 @@ abstract class File
             Path::makeAbsolute($this->path, $this->workingDir);
     }
 
-    public function getPath(): FileDirectoryExistent
+    public function getPath(): FileDirectory
     {
-        return new FileDirectoryExistent($this->info->getPath());
+        return new FileDirectory($this->info->getPath());
     }
 }
