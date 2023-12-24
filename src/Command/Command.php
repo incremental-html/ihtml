@@ -1,13 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\Command;
 
 use Exception;
 use GetOpt\GetOpt;
+use iHTML\Ccs\Ccs;
 use iHTML\Ccs\CcsChunk;
 use iHTML\Ccs\CcsFile;
 use iHTML\Document\Document;
-use iHTML\Messages\File;
+use iHTML\Filesystem\FileDirectory;
+use iHTML\Filesystem\FileDirectoryExistent;
+use iHTML\Filesystem\FileRegular;
 use iHTML\Project\Project;
 use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
@@ -15,63 +19,72 @@ use Throwable;
 
 class Command
 {
+    /**
+     * @return void
+     */
     public static function execute(): void
     {
         $getOpt = new GetOpt('r:o:p::s::t:d:i:');
-        /**
-         * r => passare il codice via parametro in shell
-         * o => output, per il progetto la cartella, per i file il file,
-         *  per i file è di default a schermo, per il progetto è la cwd
-         * s => modalità server sul progetto
-         * t => per il server, static, altrimenti è la cartella corrente
-         * d => cartella di root per i css chunk, da input e da parametro
-         * i => index di default
-         */
+        $getOpt->process();
         $options = $getOpt->getOptions();
         $operands = $getOpt->getOperands();
 
         try {
-            if (isset($options['s'])) {
-                self::server(
-                    $options['p'] ?? __DIR__,
-                    $options['t'] ?? __DIR__,
-                    $options['s'] != 1 ? $options['s'] : 1337
-                );
-            } elseif (isset($options['p'])) {
-                self::project(
-                    $options['p'] != 1 ? $options['p'] : __DIR__,
-                    $options['o'] ?? '.',
-                    $options['i'] ?? null
-                );
-            } elseif (isset($operands[0]) && isset($operands[1])) {
-                $index = $options['i'] ?? null;
-                self::file(
-                    $operands[0],
-                    $operands[1],
-                    $options['o'] ?? null,
-                );
-            } elseif (isset($operands[0]) && isset($options['r'])) {
-                $documentFile = $operands[0];
-                $ccsCode = $options['r'];
-                $ccsRoot = $options['d'] ?? getcwd();
-                $output = $options['o'] ?? null;
-                self::param(
-                    $documentFile,
-                    $ccsCode,
-                    $ccsRoot,
-                    $output,
-                );
-            } elseif (isset($operands[0])) {
-                $documentFile = $operands[0];
-                $ccsRoot = $options['d'] ?? getcwd();
-                $output = $options['o'] ?? null;
-                self::input(
-                    $documentFile,
-                    $ccsRoot,
-                    $output,
-                );
-            } else {
-                print 'Please, insert template file' . "\n\n";
+            switch (true) {
+                case isset($options['s']):
+                    // $port = $options['s'] != 1 ? intval($options['s']) : 1337;
+                    // $project = $options['p']; // TODO: add default
+                    // $static = $options['t']; // TODO: add default
+                    // self::startServer(
+                    //     $port,
+                    //     $project,
+                    //     $static,
+                    // );
+                    break;
+                case isset($options['p']):
+                    $project = $options['p']; // TODO: add default on $options['p'] != 1
+                    $output = $options['o']; // TODO: add default
+                    $index = $options['i'] ?? null;
+                    self::compileProject(
+                        $project,
+                        $output,
+                        $index,
+                    );
+                    break;
+                case isset($operands[0]) && isset($operands[1]):
+                    $documentFile = $operands[0];
+                    $ccsFile = $operands[1];
+                    $output1 = $options['o'] ?? null;
+                    self::compileFile(
+                        $documentFile,
+                        $ccsFile,
+                        $output1,
+                    );
+                    break;
+                case isset($operands[0]) && isset($options['r']):
+                    $documentFile = $operands[0];
+                    $ccsCode = $options['r'];
+                    $ccsRoot = $options['d']; // TODO: add default
+                    $output = $options['o'] ?? null;
+                    self::applyFromParam(
+                        $documentFile,
+                        $ccsCode,
+                        $ccsRoot,
+                        $output,
+                    );
+                    break;
+                case isset($operands[0]):
+                    $documentFile = $operands[0];
+                    $ccsRoot = $options['d']; // TODO: add default
+                    $output = $options['o'] ?? null;
+                    self::compileFromStandardInput(
+                        $documentFile,
+                        $ccsRoot,
+                        $output,
+                    );
+                    break;
+                default:
+                    print 'Please, insert template file' . "\n\n";
             }
         } catch (Throwable $exception) {
             print 'Error occurred:' . "\n";
@@ -79,17 +92,21 @@ class Command
         }
     }
 
-    private static function server(mixed $project, mixed $static, mixed $port): void
+    private static function startServer(
+        string $port,
+        string $project,
+        string $static
+    ): void
     {
-        // $project = new Project(dir($project));
+        // $compileProject = new Project(dir($compileProject));
         // print 'Available paths:' . "\n\n";
-        // $project->get()->map(function ($resource) use ($port) {
+        // $compileProject->get()->map(function ($resource) use ($port) {
         //     print "  http://127.0.0.1:{$port}/{$resource->output}\n";
         // });
         // print "\n--\n\n";
         // $loop = Factory::create();
-        // $server = new HttpServer($loop, function (ServerRequestInterface $request) use ($project, $static, $port, $options) {
-        //     if ($resource = $project->get()->first(function ($res) use ($request) {
+        // $startServer = new HttpServer($loop, function (ServerRequestInterface $request) use ($compileProject, $static, $port, $options) {
+        //     if ($resource = $compileProject->get()->first(function ($res) use ($request) {
         //         return '/' . $res->output === $request->getUri()->getPath();
         //     })) {
         //         $resource->ccs->applyTo($resource->document);
@@ -108,7 +125,7 @@ class Command
         // });
         // print 'Server loaded.' . PHP_EOL;
         // $socket = new SocketServer($port, $loop);
-        // $server->listen($socket);
+        // $startServer->listen($socket);
         // print "Listening to http://127.0.0.1:{$port}..." . PHP_EOL . PHP_EOL;
         // $loop->run();
     }
@@ -116,61 +133,62 @@ class Command
     /**
      * @throws Exception
      */
-    private static function project(
-        mixed   $project,
-        mixed   $output,
+    private static function compileProject(
+        string  $projectDir,
+        string  $outputDir,
         ?string $index,
     ): void
     {
-        $pr = new Project(dir($project));
-        $pr->render(new SplFileInfo(Path::makeAbsolute($output, getcwd())), $index);
+        $projectDir = new FileDirectoryExistent($projectDir, getcwd());
+        $outputDir = new FileDirectory($outputDir, getcwd());
+        $project = new Project($projectDir);
+        $project->render($outputDir, $index);
     }
 
-    private static function file(
+    private static function compileFile(
         mixed   $documentFile,
         mixed   $ccsFile,
         ?string $output,
     ): void
     {
         $document = new Document($documentFile);
-        $ccs = new CcsFile(new File($ccsFile));
+        $ccs = Ccs::fromFile(new FileRegular($ccsFile));
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save(new File($output));
+            $document->save(new FileRegular($output));
         }
     }
 
-    private static function param(
-        mixed   $documentFile,
-        mixed   $ccsCode,
-        mixed   $ccsRoot,
+    private static function applyFromParam(
+        string  $documentFile,
+        string  $ccsCode,
+        string  $ccsRoot,
+        ?string $output,
+    ): void
+    {
+        $document = new Document(File($documentFile));
+        $ccs = new CcsChunk($ccsCode, dir($ccsRoot));
+        $ccs->applyTo($document);
+        if (isset($output)) {
+            $document->save(new FileRegular($output));
+        }
+    }
+
+    private static function compileFromStandardInput(
+        string  $documentFile,
+        string  $ccsRoot,
         ?string $output,
     ): void
     {
         $document = new Document($documentFile);
-        $ccs = new CcsChunk($ccsCode, $ccsRoot);
-        $ccs->applyTo($document);
-        if (isset($output)) {
-            $document->save($output);
-        }
-    }
-
-    private static function input(
-        mixed   $documentFile,
-        mixed   $ccsRoot,
-        ?string $output,
-        ?string $index,
-    ): void
-    {
-        $document = new Document($documentFile);
-        $ccs = new CcsChunk(
+        $ccs = Ccs::fromChunk(
             file_get_contents('php://stdin'),
             $ccsRoot
         );
         $ccs->applyTo($document);
         if (isset($output)) {
 
-            $document->save($output, $index);
+            $document->save($output);
         }
     }
 }

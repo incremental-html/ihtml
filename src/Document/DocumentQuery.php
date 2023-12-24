@@ -2,10 +2,8 @@
 
 namespace iHTML\Document;
 
-use Symfony\Component\DomCrawler\Crawler;
-use Exception;
-use DOMDocument;
 use IteratorAggregate;
+use Symfony\Component\DomCrawler\Crawler;
 
 class DocumentQuery implements IteratorAggregate
 {

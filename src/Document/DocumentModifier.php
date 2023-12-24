@@ -2,8 +2,10 @@
 
 namespace iHTML\Document;
 
-use Symfony\Component\DomCrawler\Crawler;
 use DOMDocument;
+use Exception;
+use Masterminds\HTML5;
+use Symfony\Component\DomCrawler\Crawler;
 
 abstract class DocumentModifier
 {
@@ -32,28 +34,28 @@ abstract class DocumentModifier
         if (!$this->isValid(...$params)) {
             return;
         } // or throw new Exception
-        
+
         $this->params = $params;
-        
+
         foreach ($this->domlist as $entry) {
             $this->apply($entry);
         }
     }
-    
+
     const DISPLAY = 1001;
     const CONTENT = 1002;
-    const NONE    = 1005;
+    const NONE = 1005;
     const INHERIT = 1012;
 
     public function render()
     {
     }
-    
+
     protected function domFragment($content)
     {
         $fragment = $this->domdocument->createDocumentFragment();
         //$fragment->appendXML($content);
-        foreach ($this->htmlToDOM($content, $this->domdocument) as $node) {
+        foreach (self::htmlToDOM($content, $this->domdocument) as $node) {
             $fragment->appendChild($node);
         }
         return $fragment;
@@ -66,32 +68,32 @@ abstract class DocumentModifier
             switch (true) {
                 case is_string($param):
                     $content[] = $param;
-                break;
+                    break;
                 case $param === self::NONE:
                     // none
-                break;
+                    break;
                 case $param === self::DISPLAY:
                     $content[] = $entry->ownerDocument->saveHTML($entry);
-                break;
+                    break;
                 case $param === self::CONTENT:
                     foreach ($entry->childNodes as $childNode) {
                         $content[] = $entry->ownerDocument->saveHTML($childNode);
                     }
-                break;
+                    break;
                 case $param === self::TEXT:
                     // TODO
-                break;
+                    break;
                 case $param instanceof ATTR and $param->value === self::CONTENT:
                     $param = $entry->getAttribute($c->name);
-                break;
+                    break;
                 //case $param instanceof ATTR and $param->value === self::DISPLAY:
-                    // TODO
+                // TODO
                 //break;
                 //case $param instanceof STYLE and $param->value === self::CONTENT:
-                    // TODO
+                // TODO
                 //break;
                 //case $param instanceof STYLE and $param->value === self::DISPLAY:
-                    // TODO
+                // TODO
                 //break;
             }
         }
@@ -106,8 +108,8 @@ abstract class DocumentModifier
 
         // if exists, removes it
         if (($key = $this->array_usearch($element, $this->lates, function ($a, $b) {
-            return $a->element === $b;
-        })) !== false) {
+                return $a->element === $b;
+            })) !== false) {
             array_splice($this->lates, $key, 1);
         }
 
@@ -118,7 +120,7 @@ abstract class DocumentModifier
     }
 
     protected $lates = [];
-    
+
     public function latesExpandInherits()
     {
         $oldLates = $this->lates;
@@ -132,10 +134,10 @@ abstract class DocumentModifier
         $this->lates = [];
         foreach ($oldLates as $oldLate) {
             // expand single element (apply to all children the prop)
-            foreach (( new \Symfony\Component\DomCrawler\Crawler($oldLate->element) )->filter('*') as $childElement) {
+            foreach ((new \Symfony\Component\DomCrawler\Crawler($oldLate->element))->filter('*') as $childElement) {
                 if (($key = $this->array_usearch($childElement, $this->lates, function ($a, $b) {
-                    return $a->element === $b;
-                })) !== false) {
+                        return $a->element === $b;
+                    })) !== false) {
                     array_splice($this->lates, $key, 1);
                 }
 
@@ -157,23 +159,18 @@ abstract class DocumentModifier
         return each($res)['key'];
     }
 
-    private function htmlToDOM($html, $doc)
+    private static function htmlToDOM($html, $doc): array
     {
-        $html = '<div id="html-to-dom-input-wrapper">' . $html . '</div>';
-        $libxml_use_internal_errors = libxml_use_internal_errors(true);
-        $hdoc = DOMDocument::loadHTML($html);
-        libxml_use_internal_errors($libxml_use_internal_errors);
-        $child_array = array();
-        try {
-            $children = $hdoc->getElementById('html-to-dom-input-wrapper')->childNodes;
-            foreach ($children as $child) {
-                $child = $doc->importNode($child, true);
-                array_push($child_array, $child);
-            }
-        } catch (Exception $ex) {
-            error_log($ex->getMessage(), 0);
-        }
-        return $child_array;
+        $html5parser = new HTML5();
+        $wrapper = $html5parser
+            ->loadHTML('<div id="html-to-dom-input-wrapper">' . $html . '</div>')
+            ->getElementById('html-to-dom-input-wrapper')
+        ;
+        $children = array_map(
+            fn($childNode) => $doc->importNode($childNode, true),
+            iterator_to_array($wrapper->childNodes)
+        );
+        return $children;
     }
 }
 
@@ -181,6 +178,7 @@ class Late
 {
     public $element;
     public $attribute;
+
     public function __construct($elem, $attr, int $weight = 0)
     {
         $this->element = $elem;

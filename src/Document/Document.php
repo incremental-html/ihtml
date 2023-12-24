@@ -6,7 +6,7 @@ use DOMDocument;
 use Exception;
 use iHTML\Ccs\CcsChunk;
 use iHTML\Ccs\CcsFile;
-use iHTML\Messages\File;
+use iHTML\Filesystem\FileRegular;
 use Masterminds\HTML5;
 use SplFileInfo;
 use Symfony\Component\DomCrawler\Crawler;
@@ -17,13 +17,13 @@ class Document
     private DOMDocument $domDocument;
     private array $modifiers = [];
 
-    public function __construct(File $html)
+    public function __construct(FileRegular $html)
     {
-        $this->domDocument = (new HTML5)->load($html->getPathname(), [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
+        $this->domDocument = (new HTML5)->load($html, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
         // LOAD INTERNAL CCS
         // <link rel="contentsheet" href="..."> ...
         foreach ($this('link[rel="contentsheet"][href]') as $result) {
-            $ccs = new CcsFile(new File(Path::makeAbsolute($result->getAttribute('href'), $html->getPath())));
+            $ccs = new CcsFile(new FileRegular($result->getAttribute('href'), $html->getPath()));
             $ccs->applyTo($this);
             $result->parentNode->removeChild($result);
         }
@@ -35,7 +35,7 @@ class Document
         }
         // <ELEM content="..."> ...
         // foreach ($this('[content]') as $result) {
-            // TODO
+        // TODO
         // }
     }
 
@@ -55,11 +55,13 @@ class Document
         return $this;
     }
 
-    public function save(File $output, string $index = "index.html"): Document
+    public function save(string $output, string $outputDir, string $index = "index.html"): Document
     {
+        $output = $output ?: './';
         if (str_ends_with($output, '/')) {
-            $output = new SplFileInfo($output . $index);
+            $output = $output . $index;
         }
+        $output = new FileRegular($output, $outputDir);
         if (!empty($output->getPath()) && !file_exists($output->getPath())) {
             mkdir($output->getPath(), 0777, true);
         }
