@@ -1,8 +1,11 @@
 <?php
 
-namespace iHTML\Document;
+namespace iHTML\iHTML;
 
-use iHTML\iHTML\Document;
+use iHTML\Document\DocumentQueryAttribute;
+use iHTML\Document\DocumentQueryClass;
+use iHTML\Document\DocumentQueryJson;
+use iHTML\Document\DocumentQueryStyle;
 use IteratorAggregate;
 use Symfony\Component\DomCrawler\Crawler;
 

@@ -2,6 +2,7 @@
 
 namespace iHTML\Document;
 
+use iHTML\iHTML\DocumentQuery;
 use Symfony\Component\DomCrawler\Crawler;
 
 class DocumentQueryStyle

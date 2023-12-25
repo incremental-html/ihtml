@@ -2,8 +2,9 @@
 
 namespace iHTML\Document;
 
-use Symfony\Component\DomCrawler\Crawler;
 use Exception;
+use iHTML\iHTML\DocumentQuery;
+use Symfony\Component\DomCrawler\Crawler;
 
 class DocumentQueryAttribute
 {

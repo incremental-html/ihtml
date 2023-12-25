@@ -6,7 +6,6 @@ namespace iHTML\iHTML;
 use Exception;
 use iHTML\CcsParser\CcsDeclaration;
 use iHTML\CcsParser\CcsParser;
-use iHTML\Document\DocumentQuery;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS\Parsing\SourceException;

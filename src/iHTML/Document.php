@@ -6,11 +6,9 @@ use DOMDocument;
 use Exception;
 use iHTML\CcsProperty\CcsChunk;
 use iHTML\CcsProperty\CcsFile;
-use iHTML\Document\DocumentQuery;
 use iHTML\Filesystem\FileRegular;
 use Masterminds\HTML5;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Filesystem\Path;
 use function Symfony\Component\String\u;
 
 class Document
