@@ -22,7 +22,7 @@ ihtml ../static-html-bundles/html5up-stellar/generic.html \
 # diff -w static-html-bundles/html5up-stellar/generic.html ccs/examples/generated.html
 
 ihtml ../static-html-bundles/html5up-stellar/generic.html \
-      ccs/white-space.ccs \
-      -o ccs/examples/generated.html
+      example-file-whitespace/white-space.ccs \
+      -o example-file-whitespace/generated.html
 # to see results:
 # diff -w static-html-bundles/html5up-stellar/generic.html ccs/examples/generated.html
