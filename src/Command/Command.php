@@ -20,7 +20,16 @@ class Command
      */
     public static function execute(): void
     {
-        $getOpt = new GetOpt('r:o:p::s::t:d:i:');
+        $getOpt = new GetOpt([
+            ['r', 'code', GetOpt::REQUIRED_ARGUMENT, 'Code to execute'],
+            ['o', 'output', GetOpt::REQUIRED_ARGUMENT, 'Output dir or file (depends on modality)'],
+            ['p', 'project', GetOpt::OPTIONAL_ARGUMENT, 'Project to compile'],
+            ['s', 'server', GetOpt::OPTIONAL_ARGUMENT, '(Server mode) port to launch server on'],
+            ['t', 'staticDir', GetOpt::REQUIRED_ARGUMENT, '(Server mode) Directory of static file'],
+            ['d', 'dir', GetOpt::REQUIRED_ARGUMENT, 'Working dir of code snippets'],
+            ['i', 'index', GetOpt::REQUIRED_ARGUMENT, 'Default index file name for `/`'],
+            ['v', 'verbose', GetOpt::NO_ARGUMENT, 'Make verbose'],
+        ]);
         $getOpt->process();
         $options = $getOpt->getOptions();
         $operands = $getOpt->getOperands();
@@ -31,14 +40,14 @@ class Command
                  * Server mode
                  */
                 case isset($options['s']):
-                     $port = $options['s'] != 1 ? $options['s'] : '1337';
-                     $project = $options['p']; // TODO: add default
-                     $static = $options['t']; // TODO: add default
-                     self::startServer(
-                         $port,
-                         $project,
-                         $static,
-                     );
+                    $port = $options['s'] != 1 ? $options['s'] : '1337';
+                    $project = $options['p']; // TODO: add default
+                    $static = $options['t']; // TODO: add default
+                    self::startServer(
+                        $port,
+                        $project,
+                        $static,
+                    );
                     break;
                 case isset($options['p']):
                     /**
@@ -92,8 +101,10 @@ class Command
                     print 'Please, insert template file' . "\n\n";
             }
         } catch (Throwable $exception) {
-            print 'Error occurred:' . "\n";
-            print_r($exception);
+            print 'Error occurred:' . "\n" . $exception->getMessage() . "\n\n";
+            if ($options['v'] ?? false) {
+                print_r($exception);
+            }
         }
     }
 
@@ -148,6 +159,7 @@ class Command
         $outputDir = new FileDirectory($outputDir, getcwd());
         $project = new Project($projectDir);
         $project->render($outputDir, $index);
+        print 'Project compiled successfully' . "\n\n";
     }
 
     private static function compileFile(
@@ -166,6 +178,7 @@ class Command
         } else {
             $document->print();
         }
+        print 'File compiled successfully' . "\n\n";
     }
 
     private static function applyFromParam(
@@ -185,6 +198,7 @@ class Command
         } else {
             $document->print();
         }
+        print 'Ccs code applied successfully' . "\n\n";
     }
 
     private static function compileFromStandardInput(
@@ -203,5 +217,6 @@ class Command
         } else {
             $document->print();
         }
+        print 'Ccs code applied successfully' . "\n\n";
     }
 }
