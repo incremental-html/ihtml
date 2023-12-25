@@ -11,6 +11,7 @@ use iHTML\Filesystem\FileRegular;
 use Masterminds\HTML5;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Path;
+use function Symfony\Component\String\u;
 
 class Document
 {
@@ -86,15 +87,10 @@ class Document
     public function getModifier(string $modifier)
     {
         // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
-        $modifiersMap =
-            collect(scandir(__DIR__ . '/../Document/Modifiers'))
-                ->diff(['.', '..'])
-                ->map(fn($file) => '\\iHTML\\Document\\Modifiers\\' . Path::getFilenameWithoutExtension($file))
-                ->mapWithKeys(fn($modifierClass) => [$modifierClass::queryMethod() => $modifierClass]);
-        if (!$modifiersMap->has($modifier)) {
-            throw new Exception("Modifier $modifier doesn't exist");
+        $modifierClass = '\\iHTML\\CcsProperty\\' . u($modifier)->title() . 'Property';
+        if (!class_exists($modifierClass)) {
+            throw new Exception("Class `$modifierClass` not implemented for method `$modifier`.");
         }
-        $modifierClass = $modifiersMap->get($modifier);
         $this->modifiers[$modifier] = new $modifierClass($this->domDocument);
         return $this->modifiers[$modifier];
     }

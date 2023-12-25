@@ -5,7 +5,7 @@ namespace iHTML\iHTML;
 use Exception;
 use iHTML\Filesystem\FileRegularExistent;
 
-class ProjectRow
+class ProjectResource
 {
     private string $html;
     private string $apply;

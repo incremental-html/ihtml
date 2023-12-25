@@ -10,6 +10,7 @@ use iHTML\Document\DocumentQuery;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS\Parsing\SourceException;
+use Sabberworm\CSS\Value\CSSString;
 use function Symfony\Component\String\u;
 
 class Ccs
@@ -139,24 +140,7 @@ class Ccs
 //            // 'white-space' =>
 //        ];
 //    }
-
-    /**
-     * @throws Exception
-     */
-    private function declarationApply(CcsDeclaration $declaration, DocumentQuery $query): void
-    {
-        $property = $declaration->name;
-        $class = '\\iHTML\\CcsProperty\\' . u($property)->camel()->title() . 'Property';
-        if (!class_exists($class)) {
-            throw new Exception("Class `$class` not implemented for property `$property`.");
-        }
-        $class::exec(
-            $query,
-            $declaration->values,
-            $declaration->content
-        );
-    }
-
+//
 //    private function solveValues($values, array $constants = [])
 //    {
 //        return array_map(
@@ -173,4 +157,25 @@ class Ccs
 //                }
 //            }, $values);
 //    }
+
+    /**
+     * @throws Exception
+     */
+    private function declarationApply(CcsDeclaration $declaration, DocumentQuery $query): void
+    {
+        $property = $declaration->property;
+        $method = (string)u($property)->camel();
+        $methodClass = '\\iHTML\\CcsProperty\\' . u($method)->title() . 'Property';
+        if (!class_exists($methodClass)) {
+            throw new Exception("Class `$methodClass` not implemented for method `$method`.");
+        }
+        $values = collect($declaration->values)
+            ->map(fn($value) => match (true) {
+                $value instanceof CSSString => $value->getString(),
+                is_string($value) => $methodClass::constants()[$value] ?? throw new Exception("Constant `$value` not defined."),
+                default => throw new Exception("Value $value not recognized."),
+            })
+        ;
+        $query->$method(...$values);
+    }
 }

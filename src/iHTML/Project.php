@@ -24,13 +24,8 @@ class Project
         $manifest = new FileRegularExistent("project.yaml", $this->directory);
         $manifest = (object)Yaml::parseFile($manifest);
         $this->resources = collect($manifest->resources)->map(
-            fn($input, $output) => new ProjectRow($input, $output, $this->directory)
+            fn($input, $output) => new ProjectResource($input, $output, $this->directory)
         )->values();
-    }
-
-    public function get(): Collection
-    {
-        return $this->resources;
     }
 
     /**
@@ -39,17 +34,22 @@ class Project
     public function render(FileDirectory $outputDir, string $index = null): void
     {
         $outputDir->create();
-        $this->resources->map(function ($projectRow) use ($outputDir, $index) {
-            /** @var ProjectRow $projectRow */
-            $ccs = $projectRow->getCcs();
-            $document = $projectRow->getDocument();
+        $this->resources->map(function ($resource) use ($outputDir, $index) {
+            /** @var ProjectResource $resource */
+            $ccs = $resource->getCcs();
+            $document = $resource->getDocument();
             $ccs->applyTo($document);
             $document->render();
             $document->save(
-                $projectRow->getOutput(),
+                $resource->getOutput(),
                 $outputDir,
                 ...($index ? [$index] : [])
             );
         });
+    }
+
+    public function get(): Collection
+    {
+        return $this->resources;
     }
 }

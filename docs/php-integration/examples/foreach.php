@@ -14,12 +14,12 @@ $testforeach = [
 // foreach
 foreach ($testforeach as $each) {
 	// duplicate the template
-	$document('.site-inner .content .entry-content:last-child')->display(\iHTML\Modifiers\DisplayModifier::DISPLAY, \iHTML\Modifiers\DisplayModifier::DISPLAY);
+	$document('.site-inner .content .entry-content:last-child')->display(\iHTML\CcsProperty\DisplayProperty::DISPLAY, \iHTML\CcsProperty\DisplayProperty::DISPLAY);
 	$document('.site-inner .content .entry-content:nth-last-child(2) h2')->text($each->prop1);
 	$document('.site-inner .content .entry-content:nth-last-child(2)')->attr('data-attr2')->content($each->prop2);
 	$document('.site-inner .content .entry-content:nth-last-child(2) p')->content($each->prop3);
 }
-$document('.site-inner .content .entry-content:last-child')->display(\iHTML\Modifiers\DisplayModifier::NONE);
+$document('.site-inner .content .entry-content:last-child')->display(\iHTML\CcsProperty\DisplayProperty::NONE);
 
 $document->render(STDOUT);
 

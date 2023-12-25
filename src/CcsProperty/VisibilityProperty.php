@@ -2,25 +2,39 @@
 
 namespace iHTML\CcsProperty;
 
-use iHTML\Document\Modifiers\VisibilityModifier;
-
 class VisibilityProperty extends Property
 {
-    public static function property(): string
-    {
-        return 'visibility';
-    }
+    const VISIBLE = 1003;
+    const HIDDEN  = 1004;
 
-    public static function method(): string
+    public static function ccsConstants(): array
     {
-        return 'visibility';
-    }
-
-    public static function constants(): array
-    {
+        parent::ccsConstants();
         return [
-            'visible' => VisibilityModifier::VISIBLE,
-            'hidden' => VisibilityModifier::HIDDEN,
+            'visible' => VisibilityProperty::VISIBLE,
+            'hidden' => VisibilityProperty::HIDDEN,
         ];
+    }
+
+    public static function queryMethod(): string
+    {
+        return 'visibility';
+    }
+    
+    public static function isValid(...$params): bool
+    {
+        return in_array($params[0], [self::VISIBLE, self::HIDDEN]);
+    }
+
+    public function apply(\DOMElement $element)
+    {
+        $this->applyLater($element, self::VISIBLE);
+    }
+
+    public function render()
+    {
+        foreach ($this->lates as $late) {
+            $late->element->parentNode->removeChild($late->element);
+        }
     }
 }

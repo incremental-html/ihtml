@@ -4,13 +4,20 @@ namespace iHTML\CcsProperty;
 
 class DisplayProperty extends Property
 {
-    public static function property(): string
+    public static function queryMethod(): string
     {
         return 'display';
     }
-
-    public static function method(): string
+    
+    public static function isValid(...$params): bool
     {
-        return 'display';
+        return true;
+    }
+
+    public function apply(\DOMElement $element)
+    {
+        $content = static::solveParams($this->params, $element);
+
+        $element->parentNode->replaceChild($this->domFragment($content), $element);
     }
 }

@@ -4,13 +4,37 @@ namespace iHTML\CcsProperty;
 
 class BbcodeProperty extends Property
 {
-    public static function property(): string
+    public static function queryMethod(): string
     {
         return 'bbcode';
     }
-
-    public static function method(): string
+    
+    public static function isValid(...$params): bool
     {
-        return 'bbcode';
+        return true;
+    }
+
+    public function apply(\DOMElement $element)
+    {
+        $content = static::solveParams($this->params, $element);
+        
+        $content = $this->parser->parse($content)->getAsHtml();
+
+        while ($element->hasChildNodes()) {
+            $element->removeChild($element->firstChild);
+        }
+        if ($content) {
+            $element->appendChild($this->domFragment($content));
+        }
+    }
+
+    public $parser;
+    
+    public function __construct($domdocument)
+    {
+        parent::__construct($domdocument);
+    
+        $this->parser = new \JBBCode\Parser();
+        $this->parser->addCodeDefinitionSet(new \JBBCode\DefaultCodeDefinitionSet());
     }
 }

@@ -10,11 +10,11 @@ $document('.site-inner .entry-title')
 ;
 
 $document('.site-inner .entry-title')
-    ->display('<h1>', iHTML\Modifiers\DisplayModifier::CONTENT, '</h1>')
+    ->display('<h1>', iHTML\CcsProperty\DisplayProperty::CONTENT, '</h1>')
 ;
 
 $document('footer')
-    ->visibility(iHTML\Modifiers\VisibilityModifier::HIDDEN)
+    ->visibility(iHTML\CcsProperty\VisibilityProperty::HIDDEN)
 ;
 
 $document('.site-inner .content .entry-content')

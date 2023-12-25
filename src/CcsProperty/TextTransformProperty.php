@@ -2,27 +2,62 @@
 
 namespace iHTML\CcsProperty;
 
-use iHTML\Document\Modifiers\TextTransformModifier;
-
-class TexttransformProperty extends Property
+class TextTransformProperty extends Property
 {
-    public static function property(): string
+    const LOWERCASE = 1013;
+    const UPPERCASE = 1014;
+    const CAPITALIZE = 1015;
+    const NONE = 1016;
+
+    public static function ccsConstants(): array
     {
-        return 'text-transform';
+        $ccsConstants = parent::ccsConstants();
+        return $ccsConstants + [
+                'uppercase' => TextTransformProperty::UPPERCASE,
+                'lowercase' => TextTransformProperty::LOWERCASE,
+                'capitalize' => TextTransformProperty::CAPITALIZE,
+                'none' => TextTransformProperty::NONE,
+            ];
     }
 
-    public static function method(): string
+    public static function queryMethod(): string
     {
         return 'textTransform';
     }
 
-    public static function constants(): array
+    public static function isValid(...$params): bool
     {
-        return parent::constants() + [
-                'uppercase' => TextTransformModifier::UPPERCASE,
-                'lowercase' => TextTransformModifier::LOWERCASE,
-                'capitalize' => TextTransformModifier::CAPITALIZE,
-                'none' => TextTransformModifier::NONE,
-            ];
+        return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
+    }
+
+    public function apply(\DOMElement $element)
+    {
+        $this->applyLater($element, self::INHERIT);
+    }
+
+    public function render()
+    {
+        parent::latesExpandInherits();
+
+        $transforms = [
+            self::LOWERCASE => 'strtolower',
+            self::UPPERCASE => 'strtoupper',
+            self::CAPITALIZE => 'ucwords',
+        ];
+
+        foreach ($this->lates as $late) {
+            if ($late->attribute == self::NONE) {
+                continue;
+            }
+
+            // replace in all text child nodes
+            for ($i = 0; $i < $late->element->childNodes->length; $i++) {
+                $childNode = $late->element->childNodes[$i];
+                if ($childNode instanceof \DOMText) {
+                    $text = $transforms[$late->attribute]($childNode->wholeText);
+                    $late->element->replaceChild($late->element->ownerDocument->createTextNode($text), $childNode);
+                }
+            }
+        }
     }
 }
