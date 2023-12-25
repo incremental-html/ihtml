@@ -7,16 +7,6 @@ use Parsedown;
 
 class MarkdownProperty extends Property
 {
-    public static function queryMethod(): string
-    {
-        return 'markdown';
-    }
-
-    public static function isValid(...$params): bool
-    {
-        return true;
-    }
-
     public function apply(DOMElement $element)
     {
         $content = static::solveParams($this->params, $element);

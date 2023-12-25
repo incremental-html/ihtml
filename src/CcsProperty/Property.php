@@ -3,6 +3,7 @@
 namespace iHTML\CcsProperty;
 
 use DOMDocument;
+use DOMDocumentFragment;
 use DOMElement;
 use DOMNode;
 use Masterminds\HTML5;
@@ -10,27 +11,28 @@ use Symfony\Component\DomCrawler\Crawler;
 
 abstract class Property
 {
-    abstract public static function queryMethod(): string;
-
-    abstract public static function isValid(...$params): bool;
+    public static function isValid(...$params): bool
+    {
+        return true;
+    }
 
     abstract public function apply(DOMElement $element);
 
-    protected $domdocument;
-    protected $domlist;
-    protected $params;
+    protected DOMDocument $domDocument;
+    protected Crawler $domList;
+    protected array $params;
 
     public function __construct(DOMDocument $domdocument)
     {
-        $this->domdocument = $domdocument;
+        $this->domDocument = $domdocument;
     }
 
-    public function setList(Crawler $list)
+    public function setList(Crawler $list): void
     {
-        $this->domlist = $list;
+        $this->domList = $list;
     }
 
-    public function __invoke(...$params)
+    public function __invoke(...$params): void
     {
         if (!$this->isValid(...$params)) {
             return;
@@ -38,7 +40,7 @@ abstract class Property
 
         $this->params = $params;
 
-        foreach ($this->domlist as $entry) {
+        foreach ($this->domList as $entry) {
             $this->apply($entry);
         }
     }
@@ -52,11 +54,11 @@ abstract class Property
     {
     }
 
-    protected function domFragment($content)
+    protected function domFragment($content): DOMDocumentFragment
     {
-        $fragment = $this->domdocument->createDocumentFragment();
+        $fragment = $this->domDocument->createDocumentFragment();
         //$fragment->appendXML($content);
-        foreach (self::htmlToDOM($content, $this->domdocument) as $node) {
+        foreach (self::htmlToDOM($content, $this->domDocument) as $node) {
             $fragment->appendChild($node);
         }
         return $fragment;

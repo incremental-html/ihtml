@@ -6,16 +6,6 @@ use DOMElement;
 
 class ContentProperty extends Property
 {
-    public static function queryMethod(): string
-    {
-        return 'content';
-    }
-
-    public static function isValid(...$params): bool
-    {
-        return true;
-    }
-
     public function apply(DOMElement $element)
     {
         $content = static::solveParams($this->params, $element);

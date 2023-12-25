@@ -45,6 +45,20 @@ and again
 TODO
 
 ## TODO
+* add property `attribute`:
+  * `attribute: "title" "some text";` to change content
+  * `attribute: "title" "";` to empty
+  * `attribute: "title" none;` to remove the attribute
+  * `attribute: "title" visibile/hidden;` to hide (may be shown again)
+  * `attribute: "title" "My new content" content;` to concatenate
+* add property `class`:
+  * `class: "my-class" visibile;` to add the class
+  * `class: "my-class" hidden;` to remove it
+* add property `ldjson`:
+  * `ldjson: "./title" "My title"` to set path
+* add property `style`:
+  * `style: background-color "black"` to set style
+  * `style: background-color none`
 * functionalities
   * add CSS vars(--var) function support
   * support for rules: border, margin, padding, wikitext

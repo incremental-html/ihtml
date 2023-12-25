@@ -7,11 +7,6 @@ use DOMText;
 
 class WhiteSpaceProperty extends Property
 {
-    public static function queryMethod(): string
-    {
-        return 'whiteSpace';
-    }
-
     public static function isValid(...$params): bool
     {
         return in_array($params[0], [self::NORMAL, self::NOWRAP, self::PRE, self::PRELINE, self::PREWRAP, self::INHERIT]);

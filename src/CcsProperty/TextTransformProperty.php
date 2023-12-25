@@ -23,11 +23,6 @@ class TextTransformProperty extends Property
             ];
     }
 
-    public static function queryMethod(): string
-    {
-        return 'textTransform';
-    }
-
     public static function isValid(...$params): bool
     {
         return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);

@@ -18,11 +18,6 @@ class VisibilityProperty extends Property
         ];
     }
 
-    public static function queryMethod(): string
-    {
-        return 'visibility';
-    }
-
     public static function isValid(...$params): bool
     {
         return in_array($params[0], [self::VISIBLE, self::HIDDEN]);
