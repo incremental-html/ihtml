@@ -29,7 +29,8 @@
         "illuminate/support": "^8.83",
         "symfony/yaml": "^7.0",
         "webmozart/assert": "^1.11",
-        "symfony/filesystem": "^v7"
+        "symfony/filesystem": "^v7",
+        "symfony/string": "^7"
     },
     "autoload": {
         "psr-4": {
