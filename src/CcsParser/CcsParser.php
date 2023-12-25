@@ -7,7 +7,6 @@ use Closure;
 use Exception;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
-use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS;
 use Sabberworm\CSS\Parsing\SourceException;
 
@@ -52,31 +51,7 @@ class CcsParser
                         continue 2;
                     }
                     $declarations = $declarations
-                        ->map(fn($oRule) => new class($oRule, $root) {
-                            public string $name;
-                            public string $content;
-                            public array $values;
-
-                            public function __construct($oRule, $root)
-                            {
-                                $this->name = $oRule->getRule();
-                                $this->content = (string)$oRule->getValue();
-                                $this->values = $oRule->getValue() instanceof CSS\Value\RuleValueList ?
-                                    $oRule->getValue()->getListComponents() :
-                                    [$oRule->getValue()];
-                                $this->values = array_map(
-                                    fn($v) => $v instanceof CSS\Value\URL ?
-                                        new CSS\Value\CSSString(
-                                            (
-                                            new FileRegularExistent($v->getURL()->getString(), $root)
-                                            )->contents()
-                                        ) :
-                                        // var(--something) ? ... :
-                                        $v,
-                                    $this->values
-                                );
-                            }
-                        })
+                        ->map(fn($oRule) => new CcsDeclaration($oRule, $root))
                         ->toArray()
                     ;
                     // selectors_weight(...$oContent->getSelectors()); // TODO

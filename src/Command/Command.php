@@ -194,7 +194,7 @@ class Command
         $documentFile = new FileRegularExistent($documentFile, getcwd());
         $ccsRoot = new FileDirectoryExistent($ccsRoot);
         $document = new Document($documentFile);
-        $ccs = Ccs::fromChunk($ccsCode, $ccsRoot);
+        $ccs = Ccs::fromString($ccsCode, $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
             $document->save($output, getcwd());
@@ -216,7 +216,7 @@ class Command
         $documentFile = new FileRegularExistent($documentFile, getcwd());
         $document = new Document($documentFile);
         $ccsRoot = new FileDirectoryExistent($ccsRoot);
-        $ccs = Ccs::fromChunk(file_get_contents('php://stdin'), $ccsRoot);
+        $ccs = Ccs::fromString(file_get_contents('php://stdin'), $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
             $document->save($output, getcwd());

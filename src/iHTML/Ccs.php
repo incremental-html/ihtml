@@ -4,30 +4,18 @@
 namespace iHTML\iHTML;
 
 use Exception;
+use iHTML\CcsParser\CcsDeclaration;
 use iHTML\CcsParser\CcsParser;
-use iHTML\CcsParser\CcsPropertyDecoder;
-use iHTML\Document\DocumentQueryAttribute;
-use iHTML\Document\DocumentQueryClass;
-use iHTML\Document\DocumentQueryStyle;
+use iHTML\Document\DocumentQuery;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
-use Sabberworm\CSS\Value\CSSString;
-use Symfony\Component\Filesystem\Path;
+use Sabberworm\CSS\Parsing\SourceException;
+use function Symfony\Component\String\u;
 
 class Ccs
 {
     protected string $code;
     protected FileDirectoryExistent $root;
-
-    private array $properties = [];
-    private array $attrRules = [];
-    private array $styleRules = [];
-    private array $classRules = [];
-
-    public static function fromChunk(string $code, FileDirectoryExistent $root): self
-    {
-        return new self($code, $root);
-    }
 
     /**
      * @throws Exception
@@ -37,17 +25,20 @@ class Ccs
         return new self($file->contents(), $file->getPath());
     }
 
+    public static function fromString(string $code, FileDirectoryExistent $root): self
+    {
+        return new self($code, $root);
+    }
+
     public function __construct(string $code, FileDirectoryExistent $root)
     {
-        $this->loadProperties();
-        $this->loadAttrRules();
-        $this->loadStyleRules();
-        $this->loadClassRules();
-
         $this->code = $code;
         $this->root = $root;
     }
 
+    /**
+     * @throws SourceException
+     */
     public function applyTo(Document $document): self
     {
         $parser = new CcsParser;
@@ -62,26 +53,8 @@ class Ccs
                     return;
                 }
                 foreach ($declarations as $declaration) {
-                    $ruleComponents = CcsPropertyDecoder::decodeDeclaration($this->properties, $declaration->name);
-                    $ruleType = $ruleComponents->type;
-                    $ruleName = $ruleComponents->rule;
-                    $ruleSubj = $ruleComponents->name;
-                    switch ($ruleType) {
-                        case 'node':
-                            ('\\iHTML\\CcsProperty\\' . $this->properties[$ruleName])::exec($query, $declaration->values, $declaration->content);
-                            break;
-                        case 'attr':
-                            $this->attrRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
-                            break;
-                        case 'style':
-                            $this->styleRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
-                            break;
-                        case 'class':
-                            $this->classRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
-                            break;
-                        default:
-                            throw new Exception("Rule type $ruleType not defined.");
-                    }
+                    /** @var CcsDeclaration $declaration */
+                    $this->declarationApply($declaration, $query);
                 }
             })
         ;
@@ -89,112 +62,115 @@ class Ccs
         return $this;
     }
 
+//    public function getHierarchyList(): array
+//    {
+//        if ($this->file) {
+//            $parser = new CcsParser;
+//            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_LIST);
+//        } elseif ($this->code) {
+//            $parser = new CcsParser;
+//            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_LIST);
+//        } else {
+//            throw new Exception('Ccs: code or file not set');
+//        }
+//    }
+//
+//    public function getHierarchyTree(): array
+//    {
+//        if ($this->file) {
+//            $parser = new CcsParser;
+//            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_TREE);
+//        } elseif ($this->code) {
+//            $parser = new CcsParser;
+//            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_TREE);
+//        } else {
+//            throw new Exception('Ccs: code or file not set');
+//        }
+//    }
+//
+//    private function loadAttrRules()
+//    {
+//        $this->attrRules = [
+//            'content' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values);
+//                $query->attr($name)->content(...$values);
+//            },
+//            'display' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values);
+//                $query->attr($name)->display(...$values);
+//            },
+//            'visibility' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values, ['visible' => DocumentQueryAttribute::VISIBLE, 'hidden' => DocumentQueryAttribute::HIDDEN]);
+//                $query->attr($name)->visibility(...$values);
+//            },
+//            // 'white-space' =>
+//        ];
+//    }
+//
+//    private function loadStyleRules()
+//    {
+//        $this->styleRules = [
+//            'content' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values);
+//                $query->style($name)->content(...$values);
+//            },
+//            'literal' => function ($query, $name, $values, $content) {
+//                $query->style($name)->content($content);
+//            },
+//            'display' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values, ['none' => DocumentQueryStyle::NONE]);
+//                $query->style($name)->display(...$values);
+//            },
+//            'visibility' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values, ['visible' => DocumentQueryStyle::VISIBLE, 'hidden' => DocumentQueryStyle::HIDDEN]);
+//                $query->style($name)->visibility(...$values);
+//            },
+//            // 'white-space' =>
+//        ];
+//    }
+//
+//    private function loadClassRules()
+//    {
+//        $this->classRules = [
+//            'visibility' => function ($query, $name, $values, $content) {
+//                $values = $this->solveValues($values, ['visible' => DocumentQueryClass::VISIBLE, 'hidden' => DocumentQueryClass::HIDDEN]);
+//                $query->className($name)->visibility(...$values);
+//            },
+//            // 'white-space' =>
+//        ];
+//    }
 
-    public function getHierarchyList(): array
+    /**
+     * @throws Exception
+     */
+    private function declarationApply(CcsDeclaration $declaration, DocumentQuery $query): void
     {
-        if ($this->file) {
-            $parser = new CcsParser;
-            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_LIST);
-        } elseif ($this->code) {
-            $parser = new CcsParser;
-            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_LIST);
-        } else {
-            throw new Exception('Ccs: code or file not set');
+        $property = $declaration->name;
+        $class = '\\iHTML\\CcsProperty\\' . u($property)->camel()->title() . 'Property';
+        if (!class_exists($class)) {
+            throw new Exception("Class `$class` not implemented for property `$property`.");
         }
+        $class::exec(
+            $query,
+            $declaration->values,
+            $declaration->content
+        );
     }
 
-
-    public function getHierarchyTree(): array
-    {
-        if ($this->file) {
-            $parser = new CcsParser;
-            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_TREE);
-        } elseif ($this->code) {
-            $parser = new CcsParser;
-            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_TREE);
-        } else {
-            throw new Exception('Ccs: code or file not set');
-        }
-    }
-
-
-    private function loadProperties()
-    {
-        $this->properties =
-            // scans rules directory
-            collect(scandir(__DIR__ . '/../CcsProperty'))
-                ->diff(['.', '..', 'Property.php'])
-                // gets class name from filename
-                ->map(fn($file) => Path::getFilenameWithoutExtension($file))
-                // maps in form of [ property name => class ]
-                ->mapWithKeys(fn($property) => [
-                    ('\\iHTML\\CcsProperty\\' . $property)::property() => $property,
-                ])
-                ->toArray();
-    }
-
-    private function loadAttrRules()
-    {
-        $this->attrRules = [
-            'content' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values);
-                $query->attr($name)->content(...$values);
-            },
-            'display' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values);
-                $query->attr($name)->display(...$values);
-            },
-            'visibility' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values, ['visible' => DocumentQueryAttribute::VISIBLE, 'hidden' => DocumentQueryAttribute::HIDDEN]);
-                $query->attr($name)->visibility(...$values);
-            },
-            // 'white-space' =>
-        ];
-    }
-
-    private function loadStyleRules()
-    {
-        $this->styleRules = [
-            'content' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values);
-                $query->style($name)->content(...$values);
-            },
-            'literal' => function ($query, $name, $values, $content) {
-                $query->style($name)->content($content);
-            },
-            'display' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values, ['none' => DocumentQueryStyle::NONE]);
-                $query->style($name)->display(...$values);
-            },
-            'visibility' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values, ['visible' => DocumentQueryStyle::VISIBLE, 'hidden' => DocumentQueryStyle::HIDDEN]);
-                $query->style($name)->visibility(...$values);
-            },
-            // 'white-space' =>
-        ];
-    }
-
-    private function loadClassRules()
-    {
-        $this->classRules = [
-            'visibility' => function ($query, $name, $values, $content) {
-                $values = $this->solveValues($values, ['visible' => DocumentQueryClass::VISIBLE, 'hidden' => DocumentQueryClass::HIDDEN]);
-                $query->className($name)->visibility(...$values);
-            },
-            // 'white-space' =>
-        ];
-    }
-
-    private function solveValues($values, array $constants = [])
-    {
-        return array_map(function ($value) use ($constants) {
-            if ($value instanceof CssString) {
-                return $value->getString();
-            } elseif (is_string($value) && isset($constants[$value])) {
-                return $constants[$value];
-            } else {
-                throw new Exception("$value unrecognized");
-            }
-        }, $values);
-    }
+//    private function solveValues($values, array $constants = [])
+//    {
+//        return array_map(
+//        /**
+//         * @throws Exception
+//         */
+//            function ($value) use ($constants) {
+//                if ($value instanceof CssString) {
+//                    return $value->getString();
+//                } elseif (is_string($value) && isset($constants[$value])) {
+//                    return $constants[$value];
+//                } else {
+//                    throw new Exception("$value unrecognized");
+//                }
+//            }, $values);
+//    }
 }

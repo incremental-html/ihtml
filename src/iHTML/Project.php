@@ -11,26 +11,26 @@ use Symfony\Component\Yaml\Yaml;
 
 class Project
 {
-    private FileDirectoryExistent $root;
+    private FileDirectoryExistent $directory;
 
-    private Collection $project;
+    private Collection $resources;
 
     /**
      * @throws Exception
      */
-    public function __construct(FileDirectoryExistent $projectDirectory)
+    public function __construct(FileDirectoryExistent $directory)
     {
-        $this->root = $projectDirectory;
-        $projectFile = new FileRegularExistent("project.yaml", $this->root);
-        $project = (object)Yaml::parseFile($projectFile);
-        $this->project = collect($project)->map(
-            fn($input, $output) => new ProjectRow($input, $output, $this->root)
+        $this->directory = $directory;
+        $manifest = new FileRegularExistent("project.yaml", $this->directory);
+        $manifest = (object)Yaml::parseFile($manifest);
+        $this->resources = collect($manifest->resources)->map(
+            fn($input, $output) => new ProjectRow($input, $output, $this->directory)
         )->values();
     }
 
     public function get(): Collection
     {
-        return $this->project;
+        return $this->resources;
     }
 
     /**
@@ -39,7 +39,7 @@ class Project
     public function render(FileDirectory $outputDir, string $index = null): void
     {
         $outputDir->create();
-        $this->project->map(function ($projectRow) use ($outputDir, $index) {
+        $this->resources->map(function ($projectRow) use ($outputDir, $index) {
             /** @var ProjectRow $projectRow */
             $ccs = $projectRow->getCcs();
             $document = $projectRow->getDocument();

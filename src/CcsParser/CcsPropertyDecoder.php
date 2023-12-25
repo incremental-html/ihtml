@@ -24,16 +24,16 @@ class CcsPropertyDecoder
     'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'unicode-bidi', 'vertical-align',
     'visibility', 'white-space', 'width', 'word-break', 'word-spacing', 'word-wrap', 'z-index'];
 
-    public static function decodeDeclaration($rules, $rule)
+    public static function decodeProperty($property, $rules)
     {
         $result = new class {
             public $type;
             public $name;
             public $rule;
         };
-        if (isset($rules[ $rule ])) {
+        if (isset($rules[$property])) {
             $result->type = 'node';
-            $result->rule = $rule;
+            $result->rule = $property;
             return $result;
         }
         $type = false;
@@ -51,7 +51,7 @@ class CcsPropertyDecoder
                 }
                 return '';
             },
-        ], $rule);
+        ], $property);
         if ($type == false) {
             $type = in_array($name, self::CSS_PROPERTIES) ? 'style' : 'class';
         }
