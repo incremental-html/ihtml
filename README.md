@@ -1,13 +1,13 @@
 # ihtml
 iHTML - incremental HTML
 
-A very experimental template engine (written in php so far)
+A template engine
 
 ## Installation
 
 ```sudo curl -JL https://clue.engineering/phar-composer-latest.phar -o /usr/local/bin/phar-composer
 
-sudo phar-composer build https://github.com/davidedexuno/ihtml-php.git:dev-master /usr/local/bin/ihtml
+sudo phar-composer build https://github.com/incremental-html/ihtml.git:dev-master /usr/local/bin/ihtml
 ```
 
 ## Functionalities
@@ -175,7 +175,7 @@ ihtml -p <project> -s [<PORT>] [-t <static files dir>]
 /**/
 <SELECTOR> {
   /**/
-  visibility: vosible;
+  visibility: visible;
   /**/
   visibility: hidden;
 }
@@ -237,5 +237,5 @@ ihtml -p <project> -s [<PORT>] [-t <static files dir>]
 }
 ```
 
-See examples/ for other examples.
+See docs/examples/ for other examples.
 
