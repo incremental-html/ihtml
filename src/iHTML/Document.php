@@ -1,14 +1,14 @@
 <?php
 
-namespace iHTML\Document;
+namespace iHTML\iHTML;
 
 use DOMDocument;
 use Exception;
-use iHTML\Ccs\CcsChunk;
-use iHTML\Ccs\CcsFile;
+use iHTML\CcsProperty\CcsChunk;
+use iHTML\CcsProperty\CcsFile;
+use iHTML\Document\DocumentQuery;
 use iHTML\Filesystem\FileRegular;
 use Masterminds\HTML5;
-use SplFileInfo;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Path;
 
@@ -87,7 +87,7 @@ class Document
     {
         // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
         $modifiersMap =
-            collect(scandir(__DIR__ . '/Modifiers'))
+            collect(scandir(__DIR__ . '/../Document/Modifiers'))
                 ->diff(['.', '..'])
                 ->map(fn($file) => '\\iHTML\\Document\\Modifiers\\' . Path::getFilenameWithoutExtension($file))
                 ->mapWithKeys(fn($modifierClass) => [$modifierClass::queryMethod() => $modifierClass]);

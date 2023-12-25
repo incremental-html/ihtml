@@ -2,6 +2,7 @@
 
 namespace iHTML\Document;
 
+use iHTML\iHTML\Document;
 use IteratorAggregate;
 use Symfony\Component\DomCrawler\Crawler;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace iHTML\Ccs;
+namespace iHTML\CcsParser;
 
-class CcsRuleDecoder
+class CcsPropertyDecoder
 {
-    const CSS_RULES = ['align-content', 'align-items', 'align-self', 'all', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode',
+    const CSS_PROPERTIES = ['align-content', 'align-items', 'align-self', 'all', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode',
     'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'backface-visibility', 'background', 'background-attachment',
     'background-blend-mode', 'background-clip', 'background-color', 'background-image', 'background-origin', 'background-position', 'background-repeat', 'background-size',
     'border', 'border-bottom', 'border-bottom-color', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-bottom-style', 'border-bottom-width',
@@ -24,7 +24,7 @@ class CcsRuleDecoder
     'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'unicode-bidi', 'vertical-align',
     'visibility', 'white-space', 'width', 'word-break', 'word-spacing', 'word-wrap', 'z-index'];
 
-    public static function decodeRule($rules, $rule)
+    public static function decodeDeclaration($rules, $rule)
     {
         $result = new class {
             public $type;
@@ -53,7 +53,7 @@ class CcsRuleDecoder
             },
         ], $rule);
         if ($type == false) {
-            $type = in_array($name, self::CSS_RULES) ? 'style' : 'class';
+            $type = in_array($name, self::CSS_PROPERTIES) ? 'style' : 'class';
         }
         if ($prop == false) {
             $prop = ['style' => 'literal', 'class' => 'visibility', 'attr' => 'content'][$type];

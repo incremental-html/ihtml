@@ -5,19 +5,16 @@ namespace iHTML\Command;
 
 use Exception;
 use GetOpt\GetOpt;
-use iHTML\Ccs\Ccs;
-use iHTML\Document\Document;
 use iHTML\Filesystem\FileDirectory;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
-use iHTML\Project\Project;
+use iHTML\iHTML\Ccs;
+use iHTML\iHTML\Document;
+use iHTML\iHTML\Project;
 use Throwable;
 
 class Command
 {
-    /**
-     * @return void
-     */
     public static function execute(): void
     {
         $getOpt = new GetOpt([
@@ -162,6 +159,9 @@ class Command
         print 'Project compiled successfully' . "\n\n";
     }
 
+    /**
+     * @throws Exception
+     */
     private static function compileFile(
         string  $documentFile,
         string  $ccsFile,
@@ -181,6 +181,9 @@ class Command
         print 'File compiled successfully' . "\n\n";
     }
 
+    /**
+     * @throws Exception
+     */
     private static function applyFromParam(
         string  $documentFile,
         string  $ccsCode,
@@ -201,6 +204,9 @@ class Command
         print 'Ccs code applied successfully' . "\n\n";
     }
 
+    /**
+     * @throws Exception
+     */
     private static function compileFromStandardInput(
         string  $documentFile,
         string  $ccsRoot,

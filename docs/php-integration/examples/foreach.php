@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/../src/iHTML.php';
 
-$document = new \iHTML\Document\Document(__DIR__.'/example.html');
+$document = new \iHTML\iHTML\Document(__DIR__.'/example.html');
 
 // elements
 $testforeach = [

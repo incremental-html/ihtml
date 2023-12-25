@@ -1,12 +1,10 @@
 <?php
 
-namespace iHTML\Ccs\Rules;
+namespace iHTML\CcsProperty;
 
-use iHTML\Ccs\CcsRule;
-
-class BbcodeRule extends CcsRule
+class BbcodeProperty extends Property
 {
-    public static function rule(): string
+    public static function property(): string
     {
         return 'bbcode';
     }

@@ -1,12 +1,10 @@
 <?php
 
-namespace iHTML\Ccs\Rules;
+namespace iHTML\CcsProperty;
 
-use iHTML\Ccs\CcsRule;
-
-class DisplayRule extends CcsRule
+class DisplayProperty extends Property
 {
-    public static function rule(): string
+    public static function property(): string
     {
         return 'display';
     }

@@ -1,13 +1,12 @@
 <?php
 
-namespace iHTML\Ccs\Rules;
+namespace iHTML\CcsProperty;
 
-use iHTML\Ccs\CcsRule;
 use iHTML\Document\Modifiers\VisibilityModifier;
 
-class VisibilityRule extends CcsRule
+class VisibilityProperty extends Property
 {
-    public static function rule(): string
+    public static function property(): string
     {
         return 'visibility';
     }

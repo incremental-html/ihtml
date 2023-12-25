@@ -1,13 +1,12 @@
 <?php
 
-namespace iHTML\Ccs\Rules;
+namespace iHTML\CcsProperty;
 
-use iHTML\Ccs\CcsRule;
 use iHTML\Document\Modifiers\WhiteSpaceModifier;
 
-class WhitespaceRule extends CcsRule
+class WhitespaceProperty extends Property
 {
-    public static function rule(): string
+    public static function property(): string
     {
         return 'white-space';
     }

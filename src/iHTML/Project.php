@@ -1,6 +1,6 @@
 <?php
 
-namespace iHTML\Project;
+namespace iHTML\iHTML;
 
 use Exception;
 use iHTML\Filesystem\FileDirectory;

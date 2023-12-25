@@ -1,7 +1,7 @@
 <?php
 
 
-namespace iHTML\Ccs;
+namespace iHTML\CcsParser;
 
 use Closure;
 use Exception;
@@ -9,10 +9,11 @@ use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS;
+use Sabberworm\CSS\Parsing\SourceException;
 
 class CcsParser
 {
-    private Closure $onSelectorEvent;
+    private Closure $onRuleEvent;
     private Closure $onImportEvent;
     const   INHERITANCE_TREE = 3;
     const   INHERITANCE_LIST = 4;
@@ -23,12 +24,15 @@ class CcsParser
         return $this;
     }
 
-    public function onSelector(callable $onSelector): self
+    public function onRule(callable $onRule): self
     {
-        $this->onSelectorEvent = $onSelector(...);
+        $this->onRuleEvent = $onRule(...);
         return $this;
     }
 
+    /**
+     * @throws SourceException
+     */
     public function parse(string $code, FileDirectoryExistent $root): self
     {
         $cssParser = new CSS\Parser($code);
@@ -40,39 +44,44 @@ class CcsParser
                     $this->onImportExecute($url, $root);
                     break;
                 case $oContent instanceof CSS\RuleSet\DeclarationBlock:
-                    $rules = $oContent->getRules();
-                    if (empty($rules)) {
+                    /**
+                     * @see https://web.dev/learn/css/selectors#the_parts_of_a_css_rule
+                     */
+                    $declarations = collect($oContent->getRules());
+                    if ($declarations->isEmpty()) {
                         continue 2;
                     }
-                    // selectors_weight(...$oContent->getSelectors()); // TODO
-                    $map = fn($oRule) => new class($oRule, $root) {
-                        public string $name;
-                        public string $content;
-                        public array $values;
+                    $declarations = $declarations
+                        ->map(fn($oRule) => new class($oRule, $root) {
+                            public string $name;
+                            public string $content;
+                            public array $values;
 
-                        public function __construct($oRule, $root)
-                        {
-                            $this->name = $oRule->getRule();
-                            $this->content = (string)$oRule->getValue();
-                            $this->values = $oRule->getValue() instanceof CSS\Value\RuleValueList ?
-                                $oRule->getValue()->getListComponents() :
-                                [$oRule->getValue()];
-                            $this->values = array_map(
-                                fn($v) => $v instanceof CSS\Value\URL ?
-                                    new CSS\Value\CSSString(
-                                        (
-                                        new FileRegularExistent($v->getURL()->getString(), $root)
-                                        )->contents()
-                                    ) :
-                                    // var(--something) ? ... :
-                                    $v,
-                                $this->values
-                            );
-                        }
-                    };
-                    $rules = array_map($map, $rules);
+                            public function __construct($oRule, $root)
+                            {
+                                $this->name = $oRule->getRule();
+                                $this->content = (string)$oRule->getValue();
+                                $this->values = $oRule->getValue() instanceof CSS\Value\RuleValueList ?
+                                    $oRule->getValue()->getListComponents() :
+                                    [$oRule->getValue()];
+                                $this->values = array_map(
+                                    fn($v) => $v instanceof CSS\Value\URL ?
+                                        new CSS\Value\CSSString(
+                                            (
+                                            new FileRegularExistent($v->getURL()->getString(), $root)
+                                            )->contents()
+                                        ) :
+                                        // var(--something) ? ... :
+                                        $v,
+                                    $this->values
+                                );
+                            }
+                        })
+                        ->toArray()
+                    ;
+                    // selectors_weight(...$oContent->getSelectors()); // TODO
                     $selectors = $oContent->getSelectors();
-                    $this->onSelectorExecute($selectors, $rules);
+                    $this->onRuleExecute($selectors, $declarations);
                     break;
                 default:
                     throw new Exception('Unexpected CSS element');
@@ -102,7 +111,7 @@ class CcsParser
                         $inheritance[] = $import;
                     }
                     if ($style === self::INHERITANCE_TREE) {
-                        $inheritance[$import] = array_merge($hierarchy[$import], $imports);
+                        $inheritance[$import] = array_merge($inheritance[$import], $imports);
                     }
                     break;
             }
@@ -115,8 +124,8 @@ class CcsParser
         ($this->onImportEvent)($url, $root);
     }
 
-    private function onSelectorExecute(array $selectors, array $rules)
+    private function onRuleExecute(array $selectors, array $declarations)
     {
-        ($this->onSelectorEvent)($selectors, $rules);
+        ($this->onRuleEvent)($selectors, $declarations);
     }
 }

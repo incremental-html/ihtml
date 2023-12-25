@@ -1,15 +1,15 @@
 <?php
 
 
-namespace iHTML\Ccs;
+namespace iHTML\iHTML;
 
 use Exception;
-use iHTML\Document\Document;
+use iHTML\CcsParser\CcsParser;
+use iHTML\CcsParser\CcsPropertyDecoder;
 use iHTML\Document\DocumentQueryAttribute;
 use iHTML\Document\DocumentQueryClass;
 use iHTML\Document\DocumentQueryStyle;
 use iHTML\Filesystem\FileDirectoryExistent;
-use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS\Value\CSSString;
 use Symfony\Component\Filesystem\Path;
@@ -19,7 +19,7 @@ class Ccs
     protected string $code;
     protected FileDirectoryExistent $root;
 
-    private array $rules = [];
+    private array $properties = [];
     private array $attrRules = [];
     private array $styleRules = [];
     private array $classRules = [];
@@ -39,7 +39,7 @@ class Ccs
 
     public function __construct(string $code, FileDirectoryExistent $root)
     {
-        $this->loadRules();
+        $this->loadProperties();
         $this->loadAttrRules();
         $this->loadStyleRules();
         $this->loadClassRules();
@@ -56,28 +56,28 @@ class Ccs
                 $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
                 $ccs->applyTo($document);
             })
-            ->onSelector(function (array $selectors, array $rules) use ($document) {
+            ->onRule(function (array $selectors, array $declarations) use ($document) {
                 $query = $document(implode(',', $selectors));
                 if (!iterator_count($query)) {
                     return;
                 }
-                foreach ($rules as $rule) {
-                    $ruleComponents = CcsRuleDecoder::decodeRule($this->rules, $rule->name);
+                foreach ($declarations as $declaration) {
+                    $ruleComponents = CcsPropertyDecoder::decodeDeclaration($this->properties, $declaration->name);
                     $ruleType = $ruleComponents->type;
                     $ruleName = $ruleComponents->rule;
                     $ruleSubj = $ruleComponents->name;
                     switch ($ruleType) {
                         case 'node':
-                            ('\\iHTML\\Ccs\\Rules\\' . $this->rules[$ruleName])::exec($query, $rule->values, $rule->content);
+                            ('\\iHTML\\CcsProperty\\' . $this->properties[$ruleName])::exec($query, $declaration->values, $declaration->content);
                             break;
                         case 'attr':
-                            $this->attrRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                            $this->attrRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
                             break;
                         case 'style':
-                            $this->styleRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                            $this->styleRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
                             break;
                         case 'class':
-                            $this->classRules[$ruleName]($query, $ruleSubj, $rule->values, $rule->content);
+                            $this->classRules[$ruleName]($query, $ruleSubj, $declaration->values, $declaration->content);
                             break;
                         default:
                             throw new Exception("Rule type $ruleType not defined.");
@@ -118,16 +118,18 @@ class Ccs
     }
 
 
-    private function loadRules()
+    private function loadProperties()
     {
-        $this->rules =
+        $this->properties =
             // scans rules directory
-            collect(scandir(__DIR__ . '/Rules'))
-                ->diff(['.', '..'])
+            collect(scandir(__DIR__ . '/../CcsProperty'))
+                ->diff(['.', '..', 'Property.php'])
                 // gets class name from filename
                 ->map(fn($file) => Path::getFilenameWithoutExtension($file))
-                // maps in form of [ rule name => class ]
-                ->mapWithKeys(fn($rule) => [('\\iHTML\\Ccs\\Rules\\' . $rule)::rule() => $rule])
+                // maps in form of [ property name => class ]
+                ->mapWithKeys(fn($property) => [
+                    ('\\iHTML\\CcsProperty\\' . $property)::property() => $property,
+                ])
                 ->toArray();
     }
 

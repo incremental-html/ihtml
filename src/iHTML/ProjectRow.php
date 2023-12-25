@@ -1,10 +1,8 @@
 <?php
 
-namespace iHTML\Project;
+namespace iHTML\iHTML;
 
 use Exception;
-use iHTML\Ccs\Ccs;
-use iHTML\Document\Document;
 use iHTML\Filesystem\FileRegularExistent;
 
 class ProjectRow

@@ -1,15 +1,15 @@
 <?php
 
-namespace iHTML\Ccs;
+namespace iHTML\CcsProperty;
 
 use Exception;
 use iHTML\Document\DocumentModifier;
 
-abstract class CcsRule
+abstract class Property
 {
 
     // es: text-transform
-    abstract public static function rule(): string;
+    abstract public static function property(): string;
 
     abstract public static function method(): string;
 
@@ -25,7 +25,7 @@ abstract class CcsRule
         ];
     }
 
-    public static function exec($query, $values)
+    public static function exec($query, $values): void
     {
         $method = static::method();
         

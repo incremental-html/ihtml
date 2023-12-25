@@ -1,13 +1,12 @@
 <?php
 
-namespace iHTML\Ccs\Rules;
+namespace iHTML\CcsProperty;
 
-use iHTML\Ccs\CcsRule;
 use iHTML\Document\Modifiers\TextTransformModifier;
 
-class TexttransformRule extends CcsRule
+class TexttransformProperty extends Property
 {
-    public static function rule(): string
+    public static function property(): string
     {
         return 'text-transform';
     }
