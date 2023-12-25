@@ -2,6 +2,9 @@
 
 namespace iHTML\CcsProperty;
 
+use DOMElement;
+use DOMText;
+
 class TextTransformProperty extends Property
 {
     const LOWERCASE = 1013;
@@ -30,7 +33,7 @@ class TextTransformProperty extends Property
         return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
     }
 
-    public function apply(\DOMElement $element)
+    public function apply(DOMElement $element)
     {
         $this->applyLater($element, self::INHERIT);
     }
@@ -53,7 +56,7 @@ class TextTransformProperty extends Property
             // replace in all text child nodes
             for ($i = 0; $i < $late->element->childNodes->length; $i++) {
                 $childNode = $late->element->childNodes[$i];
-                if ($childNode instanceof \DOMText) {
+                if ($childNode instanceof DOMText) {
                     $text = $transforms[$late->attribute]($childNode->wholeText);
                     $late->element->replaceChild($late->element->ownerDocument->createTextNode($text), $childNode);
                 }

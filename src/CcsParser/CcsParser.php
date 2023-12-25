@@ -4,6 +4,7 @@
 namespace iHTML\CcsParser;
 
 use Closure;
+use Directory;
 use Exception;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
@@ -70,7 +71,7 @@ class CcsParser
         return $this->inheritanceCode($file->contents($file->getSize() + 1), dir($file->getPath()));
     }
 
-    public function inheritanceCode(string $code, \Directory $root, int $style = self::INHERITANCE_LIST): array
+    public function inheritanceCode(string $code, Directory $root, int $style = self::INHERITANCE_LIST): array
     {
         $inheritance = [];
         $oCssParser = (new CSS\Parser($code))->parse();
@@ -80,7 +81,8 @@ class CcsParser
                     $import = $oContent->atRuleArgs()[0]->getUrl()->getString();
                     $imports = (new CcsParser)
                         ->setFile($oContent->atRuleArgs()[0]->getUrl()->getString())
-                        ->inheritance();
+                        ->inheritance()
+                    ;
                     if ($style === self::INHERITANCE_LIST) {
                         $inheritance = array_merge($inheritance, $imports);
                         $inheritance[] = $import;

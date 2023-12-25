@@ -14,9 +14,9 @@ class DocumentQueryJson
 
     public function __construct(DocumentQuery $query, Crawler $nodelist, string $name)
     {
-        $this->query    = $query;
+        $this->query = $query;
         $this->nodelist = $nodelist;
-        $this->name     = $name;
+        $this->name = $name;
     }
 
     public function __invoke($value)
@@ -33,7 +33,7 @@ class DocumentQueryJson
         }
         return $this->query;
     }
-    
+
     public function display($value)
     {
         throw new Exception('json/display Not yet implemented.');

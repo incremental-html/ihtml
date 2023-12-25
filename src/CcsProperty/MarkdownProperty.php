@@ -2,22 +2,25 @@
 
 namespace iHTML\CcsProperty;
 
+use DOMElement;
+use Parsedown;
+
 class MarkdownProperty extends Property
 {
     public static function queryMethod(): string
     {
         return 'markdown';
     }
-    
+
     public static function isValid(...$params): bool
     {
         return true;
     }
 
-    public function apply(\DOMElement $element)
+    public function apply(DOMElement $element)
     {
         $content = static::solveParams($this->params, $element);
-        
+
         $content = $this->parsedown->text($content);
 
         while ($element->hasChildNodes()) {
@@ -29,11 +32,11 @@ class MarkdownProperty extends Property
     }
 
     public $parsedown;
-    
+
     public function __construct($domdocument)
     {
         parent::__construct($domdocument);
-    
-        $this->parsedown = new \Parsedown();
+
+        $this->parsedown = new Parsedown();
     }
 }

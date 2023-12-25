@@ -2,6 +2,9 @@
 
 namespace iHTML\CcsProperty;
 
+use DOMElement;
+use DOMText;
+
 class WhiteSpaceProperty extends Property
 {
     public static function queryMethod(): string
@@ -34,7 +37,7 @@ class WhiteSpaceProperty extends Property
             ];
     }
 
-    public function apply(\DOMElement $element)
+    public function apply(DOMElement $element)
     {
         $this->applyLater($element, self::INHERIT);
     }
@@ -60,7 +63,7 @@ class WhiteSpaceProperty extends Property
             // replace in all text child nodes
             for ($i = 0; $i < $late->element->childNodes->length; $i++) {
                 $childNode = $late->element->childNodes[$i];
-                if ($childNode instanceof \DOMText) {
+                if ($childNode instanceof DOMText) {
                     $text = preg_replace($regex, $replace, $childNode->wholeText);
                     $late->element->replaceChild($late->element->ownerDocument->createTextNode($text), $childNode);
                 }

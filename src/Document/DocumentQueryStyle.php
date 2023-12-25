@@ -13,15 +13,15 @@ class DocumentQueryStyle
 
     //const CONTENT = 2003;
     //const DISPLAY = 2004;
-    const NONE    = 2005;
+    const NONE = 2005;
     const VISIBLE = 2006;
-    const HIDDEN  = 2007;
+    const HIDDEN = 2007;
 
     public function __construct(DocumentQuery $query, Crawler $nodelist, string $name)
     {
-        $this->query    = $query;
+        $this->query = $query;
         $this->nodelist = $nodelist;
-        $this->name     = $name;
+        $this->name = $name;
     }
 
     public function __invoke($value)
@@ -33,18 +33,18 @@ class DocumentQueryStyle
     {
         foreach ($this->nodelist as $entry) {
             $rules = $this->parse_style_attribute($entry->getAttribute('style'));
-            $rules[ $this->name ] = $value;
+            $rules[$this->name] = $value;
             $entry->setAttribute('style', $this->render_style_attribute($rules));
         }
         return $this->query;
     }
-    
+
     public function display($value)
     {
         $valueStyle = $value === self::NONE ? null : $this->parse_style_attribute($value);
         foreach ($this->nodelist as $entry) {
             $rules = $this->parse_style_attribute($entry->getAttribute('style'));
-            if (isset($rules[ $this->name ])) {
+            if (isset($rules[$this->name])) {
                 $newRules = [];
                 foreach ($rules as $n => $v) {
                     if ($n == $this->name) {
@@ -70,7 +70,7 @@ class DocumentQueryStyle
 
     function parse_style_attribute($style)
     {
-        $style = trim($style, " \t\n\r\0\x0B".';');
+        $style = trim($style, " \t\n\r\0\x0B" . ';');
         if (!$style) {
             return [];
         }
@@ -80,7 +80,7 @@ class DocumentQueryStyle
         }, $style);
         $rules = [];
         foreach ($style as list($rule, $value)) {
-            $rules[ trim($rule) ] = trim($value);
+            $rules[trim($rule)] = trim($value);
         }
         return $rules;
     }

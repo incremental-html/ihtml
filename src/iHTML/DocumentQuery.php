@@ -37,7 +37,7 @@ class DocumentQuery implements IteratorAggregate
         if (func_num_args() == 1) {
             return new DocumentQueryAttribute($this, $this->query, $name);
         }
-        ( new DocumentQueryAttribute($this, $this->query, $name) )($value);
+        (new DocumentQueryAttribute($this, $this->query, $name))($value);
         return $this;
     }
 
@@ -46,7 +46,7 @@ class DocumentQuery implements IteratorAggregate
         if (func_num_args() == 1) {
             return new DocumentQueryStyle($this, $this->query, $name);
         }
-        ( new DocumentQueryStyle($this, $this->query, $name) )($value);
+        (new DocumentQueryStyle($this, $this->query, $name))($value);
         return $this;
     }
 
@@ -55,7 +55,7 @@ class DocumentQuery implements IteratorAggregate
         if (func_num_args() == 1) {
             return new DocumentQueryClass($this, $this->query, $name);
         }
-        ( new DocumentQueryClass($this, $this->query, $name) )($value);
+        (new DocumentQueryClass($this, $this->query, $name))($value);
         return $this;
     }
 
@@ -64,7 +64,7 @@ class DocumentQuery implements IteratorAggregate
         if (func_num_args() == 1) {
             return new DocumentQueryJson($this, $this->query, $name);
         }
-        ( new DocumentQueryJson($this, $this->query, $name) )($value);
+        (new DocumentQueryJson($this, $this->query, $name))($value);
         return $this;
     }
 }

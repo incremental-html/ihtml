@@ -3,7 +3,8 @@
 namespace iHTML\CcsProperty;
 
 use DOMDocument;
-use Exception;
+use DOMElement;
+use DOMNode;
 use Masterminds\HTML5;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -13,13 +14,13 @@ abstract class Property
 
     abstract public static function isValid(...$params): bool;
 
-    abstract public function apply(\DOMElement $element);
+    abstract public function apply(DOMElement $element);
 
     protected $domdocument;
     protected $domlist;
     protected $params;
 
-    public function __construct(\DOMDocument $domdocument)
+    public function __construct(DOMDocument $domdocument)
     {
         $this->domdocument = $domdocument;
     }
@@ -61,7 +62,7 @@ abstract class Property
         return $fragment;
     }
 
-    protected static function solveParams(array $params, \DOMNode $entry): string
+    protected static function solveParams(array $params, DOMNode $entry): string
     {
         $content = [];
         foreach ($params as $param) {
@@ -100,7 +101,7 @@ abstract class Property
         return implode($content);
     }
 
-    public function applyLater(\DOMElement $element, $defaultValue)
+    public function applyLater(DOMElement $element, $defaultValue)
     {
         $attribute = $this->params[0];
 
@@ -134,7 +135,7 @@ abstract class Property
         $this->lates = [];
         foreach ($oldLates as $oldLate) {
             // expand single element (apply to all children the prop)
-            foreach ((new \Symfony\Component\DomCrawler\Crawler($oldLate->element))->filter('*') as $childElement) {
+            foreach ((new Crawler($oldLate->element))->filter('*') as $childElement) {
                 if (($key = $this->array_usearch($childElement, $this->lates, function ($a, $b) {
                         return $a->element === $b;
                     })) !== false) {
@@ -178,7 +179,7 @@ abstract class Property
         return [
             'display' => Property::DISPLAY,
             'content' => Property::CONTENT,
-            'none'    => Property::NONE,
+            'none' => Property::NONE,
             'inherit' => Property::INHERIT,
         ];
     }
