@@ -1,0 +1,8 @@
+Hierarchy:
+
+/home/pc1/Scrivania/ihtml/ihtml/docs/examples/example-file-inheritance/ccs/hierarchy.ccs
+  parent-1.ccs
+    parent-2.ccs
+      parent-3.ccs
+      parent-4.ccs
+        parent-5.ccs

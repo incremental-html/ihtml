@@ -20,3 +20,8 @@ ihtml static-html-bundles/html5up-stellar/generic.html \
       -o example-file-whitespace/generated.html
 # to see results:
 # diff -w static-html-bundles/html5up-stellar/generic.html example-file-whitespace/generated.html
+
+#
+# inheritance analysis example
+#
+ihtml -e example-file-inheritance/ccs/hierarchy.ccs > example-file-inheritance/report

@@ -4,19 +4,17 @@
 namespace iHTML\CcsParser;
 
 use Closure;
-use Directory;
 use Exception;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
+use iHTML\Filesystem\FileRegularExistent;
+use iHTML\iHTML\Ccs;
 use Sabberworm\CSS;
-use Sabberworm\CSS\Parsing\SourceException;
 
 class CcsParser
 {
     private Closure $onRuleEvent;
     private Closure $onImportEvent;
-    const   INHERITANCE_TREE = 3;
-    const   INHERITANCE_LIST = 4;
 
     public function onImport(callable $onImport): self
     {
@@ -31,7 +29,7 @@ class CcsParser
     }
 
     /**
-     * @throws SourceException
+     * @throws CSS\Parsing\SourceException
      */
     public function parse(string $code, FileDirectoryExistent $root): self
     {
@@ -66,42 +64,12 @@ class CcsParser
         return $this;
     }
 
-    public function inheritanceFile(FileRegular $file): array
-    {
-        return $this->inheritanceCode($file->contents($file->getSize() + 1), dir($file->getPath()));
-    }
-
-    public function inheritanceCode(string $code, Directory $root, int $style = self::INHERITANCE_LIST): array
-    {
-        $inheritance = [];
-        $oCssParser = (new CSS\Parser($code))->parse();
-        foreach ($oCssParser->getContents() as $oContent) {
-            switch (true) {
-                case $oContent instanceof CSS\Property\Import:
-                    $import = $oContent->atRuleArgs()[0]->getUrl()->getString();
-                    $imports = (new CcsParser)
-                        ->setFile($oContent->atRuleArgs()[0]->getUrl()->getString())
-                        ->inheritance()
-                    ;
-                    if ($style === self::INHERITANCE_LIST) {
-                        $inheritance = array_merge($inheritance, $imports);
-                        $inheritance[] = $import;
-                    }
-                    if ($style === self::INHERITANCE_TREE) {
-                        $inheritance[$import] = array_merge($inheritance[$import], $imports);
-                    }
-                    break;
-            }
-        }
-        return $inheritance;
-    }
-
-    public function onImportExecute(string $url, FileDirectoryExistent $root): void
+    private function onImportExecute(string $url, FileDirectoryExistent $root): void
     {
         ($this->onImportEvent)($url, $root);
     }
 
-    private function onRuleExecute(array $selectors, array $declarations)
+    private function onRuleExecute(array $selectors, array $declarations): void
     {
         ($this->onRuleEvent)($selectors, $declarations);
     }

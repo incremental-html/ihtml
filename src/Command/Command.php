@@ -11,6 +11,7 @@ use iHTML\Filesystem\FileRegularExistent;
 use iHTML\iHTML\Ccs;
 use iHTML\iHTML\Document;
 use iHTML\iHTML\Project;
+use Sabberworm\CSS\Parsing\SourceException;
 use Throwable;
 
 class Command
@@ -19,13 +20,15 @@ class Command
     {
         $getOpt = new GetOpt([
             ['r', 'code', GetOpt::REQUIRED_ARGUMENT, 'Code to execute'],
-            ['o', 'output', GetOpt::REQUIRED_ARGUMENT, 'Output dir or file (depends on modality)'],
+            ['o', 'output', GetOpt::REQUIRED_ARGUMENT, 'Output dir or file (depends on mode)'],
             ['p', 'project', GetOpt::OPTIONAL_ARGUMENT, 'Project to compile'],
             ['s', 'server', GetOpt::OPTIONAL_ARGUMENT, '(Server mode) port to launch server on'],
-            ['t', 'staticDir', GetOpt::REQUIRED_ARGUMENT, '(Server mode) Directory of static file'],
-            ['d', 'dir', GetOpt::REQUIRED_ARGUMENT, 'Working dir of code snippets'],
+            ['t', 'static', GetOpt::REQUIRED_ARGUMENT, '(Server mode) Directory of static file', getcwd()],
+            ['d', 'dir', GetOpt::REQUIRED_ARGUMENT, 'Working dir of code snippets', getcwd()],
             ['i', 'index', GetOpt::REQUIRED_ARGUMENT, 'Default index file name for `/`'],
+            ['e', 'inheritance', GetOpt::NO_ARGUMENT, 'Print inheritance'],
             ['v', 'verbose', GetOpt::NO_ARGUMENT, 'Make verbose'],
+            ['h', 'help', GetOpt::NO_ARGUMENT, 'This help'],
         ]);
         $getOpt->process();
         $options = $getOpt->getOptions();
@@ -33,72 +36,55 @@ class Command
 
         try {
             switch (true) {
-                /**
-                 * Server mode
-                 */
+                case isset($options['h']):
+                    print $getOpt->getHelpText();
+                    break;
                 case isset($options['s']):
-                    $port = $options['s'] != 1 ? $options['s'] : '1337';
-                    $project = $options['p']; // TODO: add default
-                    $static = $options['t']; // TODO: add default
                     self::startServer(
-                        $port,
-                        $project,
-                        $static,
+                        $options['s'] != 1 ? $options['s'] : '1337',
+                        $options['p'] ?? getcwd(),
+                        $options['t'],
                     );
                     break;
                 case isset($options['p']):
-                    /**
-                     * Compile project
-                     */
-                    $project = $options['p']; // TODO: add default on $options['p'] != 1
-                    $output = $options['o']; // TODO: add default
-                    $index = $options['i'] ?? null;
                     self::compileProject(
-                        $project,
-                        $output,
-                        $index,
+                        $options['p'] != 1 ? $options['p'] : getcwd(),
+                        $options['o'] ?? null,
+                        $options['i'] ?? null,
+                    );
+                    break;
+                case isset($options['e']):
+                    self::printInheritance(
+                        (string)$operands[0],
                     );
                     break;
                 case isset($operands[0]) && isset($operands[1]):
-                    /**
-                     * Compile single file
-                     */
-                    $documentFile = (string)$operands[0];
-                    $ccsFile = (string)$operands[1];
-                    $output = $options['o'] ?? null;
                     self::compileFile(
-                        $documentFile,
-                        $ccsFile,
-                        $output,
+                        (string)$operands[0],
+                        (string)$operands[1],
+                        $options['o'] ?? null,
                     );
                     break;
                 case isset($operands[0]) && isset($options['r']):
-                    $documentFile = (string)$operands[0];
-                    $ccsCode = $options['r'];
-                    $ccsRoot = $options['d']; // TODO: add default
-                    $output = $options['o'] ?? null;
-                    self::applyFromParam(
-                        $documentFile,
-                        $ccsCode,
-                        $ccsRoot,
-                        $output,
+                    self::applyFromParameter(
+                        (string)$operands[0],
+                        $options['r'],
+                        $options['d'],
+                        $options['o'] ?? null,
                     );
                     break;
                 case isset($operands[0]):
-                    $documentFile = (string)$operands[0];
-                    $ccsRoot = $options['d']; // TODO: add default
-                    $output = $options['o'] ?? null;
                     self::compileFromStandardInput(
-                        $documentFile,
-                        $ccsRoot,
-                        $output,
+                        (string)$operands[0],
+                        $options['d'],
+                        $options['o'] ?? null,
                     );
                     break;
                 default:
                     print 'Please, insert template file' . "\n\n";
             }
         } catch (Throwable $exception) {
-            print 'Error occurred:' . "\n" . $exception->getMessage() . "\n\n";
+            print "Error occurred:\n{$exception->getMessage()}\n\n";
             if ($options['v'] ?? false) {
                 print_r($exception);
             }
@@ -108,7 +94,7 @@ class Command
     private static function startServer(
         string $port,
         string $project,
-        string $static
+        string $static,
     ): void
     {
         // $compileProject = new Project(dir($compileProject));
@@ -184,7 +170,7 @@ class Command
     /**
      * @throws Exception
      */
-    private static function applyFromParam(
+    private static function applyFromParameter(
         string  $documentFile,
         string  $ccsCode,
         string  $ccsRoot,
@@ -224,5 +210,26 @@ class Command
             $document->print();
         }
         print 'Ccs code applied successfully' . "\n\n";
+    }
+
+    /**
+     * @throws SourceException
+     * @throws Exception
+     */
+    private static function printInheritance(string $ccsFile): void
+    {
+        $prettyTree = function (string $file, array $includes, int $level = 0) use (&$prettyTree) {
+            return str_repeat(' ', $level * 2) . $file . "\n" .
+                collect($includes)
+                    ->map(fn($include, $file) => $prettyTree($file, $include, $level + 1))
+                    ->join('')
+            ;
+        };
+
+        $ccsFile = new FileRegularExistent($ccsFile, getcwd());
+        $ccs = Ccs::fromFile($ccsFile);
+        $inheritance = $ccs->getInheritance();
+        print 'Hierarchy:' . "\n\n";
+        print $prettyTree((string)$ccsFile, $inheritance);
     }
 }

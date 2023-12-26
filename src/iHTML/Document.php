@@ -56,15 +56,14 @@ class Document
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function save(string $output, string $outputDir, string $index = "index.html"): Document
     {
-        $output = $output ?: './';
-        if (str_ends_with($output, '/')) {
-            $output = $output . $index;
-        }
-        $output = new FileRegular($output, $outputDir);
-        $output->getPath()->create();
-        $this->parser->save($this->domDocument, $output);
+        $file = self::fileFromResource($output, $index, $outputDir);
+        $file->getPath()->create();
+        $this->parser->save($this->domDocument, $file);
         return $this;
     }
 
@@ -91,5 +90,21 @@ class Document
         }
         $this->modifiers[$modifier] = new $modifierClass($this->domDocument);
         return $this->modifiers[$modifier];
+    }
+
+    /**
+     * @param string $output
+     * @param string $index
+     * @param string $outputDir
+     * @return FileRegular
+     * @throws Exception
+     */
+    private static function fileFromResource(string $output, string $index, string $outputDir): FileRegular
+    {
+        $file = $output ?: './';
+        if (str_ends_with($file, '/')) {
+            $file .= $index;
+        }
+        return new FileRegular($file, $outputDir);
     }
 }

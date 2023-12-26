@@ -62,84 +62,25 @@ class Ccs
         return $this;
     }
 
-//    public function getHierarchyList(): array
-//    {
-//        if ($this->file) {
-//            $parser = new CcsParser;
-//            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_LIST);
-//        } elseif ($this->code) {
-//            $parser = new CcsParser;
-//            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_LIST);
-//        } else {
-//            throw new Exception('Ccs: code or file not set');
-//        }
-//    }
-//
-//    public function getHierarchyTree(): array
-//    {
-//        if ($this->file) {
-//            $parser = new CcsParser;
-//            return $parser->inheritanceFile($this->file, CcsParser::INHERITANCE_TREE);
-//        } elseif ($this->code) {
-//            $parser = new CcsParser;
-//            return $parser->inheritanceCode($this->code, CcsParser::INHERITANCE_TREE);
-//        } else {
-//            throw new Exception('Ccs: code or file not set');
-//        }
-//    }
-//
-//    private function loadAttrRules()
-//    {
-//        $this->attrRules = [
-//            'content' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values);
-//                $query->attr($name)->content(...$values);
-//            },
-//            'display' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values);
-//                $query->attr($name)->display(...$values);
-//            },
-//            'visibility' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values, ['visible' => DocumentQueryAttribute::VISIBLE, 'hidden' => DocumentQueryAttribute::HIDDEN]);
-//                $query->attr($name)->visibility(...$values);
-//            },
-//            // 'white-space' =>
-//        ];
-//    }
-//
-//    private function loadStyleRules()
-//    {
-//        $this->styleRules = [
-//            'content' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values);
-//                $query->style($name)->content(...$values);
-//            },
-//            'literal' => function ($query, $name, $values, $content) {
-//                $query->style($name)->content($content);
-//            },
-//            'display' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values, ['none' => DocumentQueryStyle::NONE]);
-//                $query->style($name)->display(...$values);
-//            },
-//            'visibility' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values, ['visible' => DocumentQueryStyle::VISIBLE, 'hidden' => DocumentQueryStyle::HIDDEN]);
-//                $query->style($name)->visibility(...$values);
-//            },
-//            // 'white-space' =>
-//        ];
-//    }
-//
-//    private function loadClassRules()
-//    {
-//        $this->classRules = [
-//            'visibility' => function ($query, $name, $values, $content) {
-//                $values = $this->solveValues($values, ['visible' => DocumentQueryClass::VISIBLE, 'hidden' => DocumentQueryClass::HIDDEN]);
-//                $query->className($name)->visibility(...$values);
-//            },
-//            // 'white-space' =>
-//        ];
-//    }
-//
+    /**
+     * @return array
+     * @throws SourceException
+     */
+    public function getInheritance(): array
+    {
+        $inheritance = [];
+        $parser = new CcsParser;
+        $parser
+            ->onImport(function (string $file) use (&$inheritance) {
+                $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
+                $imports = $ccs->getInheritance();
+                $inheritance[$file] = array_merge($inheritance[$file] ?? [], $imports);
+            })
+        ;
+        $parser->parse($this->code, $this->root);
+        return $inheritance;
+    }
+
 //    private function solveValues($values, array $constants = [])
 //    {
 //        return array_map(
