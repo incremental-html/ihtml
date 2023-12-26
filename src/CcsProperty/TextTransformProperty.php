@@ -28,12 +28,12 @@ class TextTransformProperty extends Property
         return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
     }
 
-    public function apply(DOMElement $element)
+    public function apply(DOMElement $element): void
     {
         $this->applyLater($element, self::INHERIT);
     }
 
-    public function render()
+    public function render(): void
     {
         parent::latesExpandInherits();
 

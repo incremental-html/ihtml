@@ -6,7 +6,7 @@ use DOMElement;
 
 class TextProperty extends Property
 {
-    public function apply(DOMElement $element)
+    public function apply(DOMElement $element): void
     {
         $content = static::solveParams($this->params, $element);
 

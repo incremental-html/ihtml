@@ -8,7 +8,17 @@ use JBBCode\Parser;
 
 class BbcodeProperty extends Property
 {
-    public function apply(DOMElement $element)
+    public Parser $parser;
+
+    public function __construct($domDocument)
+    {
+        parent::__construct($domDocument);
+
+        $this->parser = new Parser();
+        $this->parser->addCodeDefinitionSet(new DefaultCodeDefinitionSet());
+    }
+
+    public function apply(DOMElement $element): void
     {
         $content = static::solveParams($this->params, $element);
 
@@ -20,15 +30,5 @@ class BbcodeProperty extends Property
         if ($content) {
             $element->appendChild($this->domFragment($content));
         }
-    }
-
-    public $parser;
-
-    public function __construct($domdocument)
-    {
-        parent::__construct($domdocument);
-
-        $this->parser = new Parser();
-        $this->parser->addCodeDefinitionSet(new DefaultCodeDefinitionSet());
     }
 }

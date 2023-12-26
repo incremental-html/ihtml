@@ -32,12 +32,12 @@ class WhiteSpaceProperty extends Property
             ];
     }
 
-    public function apply(DOMElement $element)
+    public function apply(DOMElement $element): void
     {
         $this->applyLater($element, self::INHERIT);
     }
 
-    public function render()
+    public function render(): void
     {
         parent::latesExpandInherits();
 

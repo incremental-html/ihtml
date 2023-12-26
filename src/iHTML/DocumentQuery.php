@@ -2,6 +2,7 @@
 
 namespace iHTML\iHTML;
 
+use Exception;
 use IteratorAggregate;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -10,7 +11,7 @@ class DocumentQuery implements IteratorAggregate
     private Document $document;
     private Crawler $query;
 
-    public function getIterator()
+    public function getIterator(): Crawler
     {
         return $this->query;
     }
@@ -21,6 +22,9 @@ class DocumentQuery implements IteratorAggregate
         $this->query = $query;
     }
 
+    /**
+     * @throws Exception
+     */
     public function __call(string $modifierMethod, array $arguments)
     {
         $modifier = $this->document->getModifier($modifierMethod);

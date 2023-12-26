@@ -4,10 +4,10 @@ namespace iHTML\iHTML;
 
 use DOMDocument;
 use Exception;
-use iHTML\CcsProperty\CcsChunk;
-use iHTML\CcsProperty\CcsFile;
 use iHTML\Filesystem\FileRegular;
+use iHTML\Filesystem\FileRegularExistent;
 use Masterminds\HTML5;
+use Sabberworm\CSS\Parsing\SourceException;
 use Symfony\Component\DomCrawler\Crawler;
 use function Symfony\Component\String\u;
 
@@ -17,27 +17,17 @@ class Document
     private DOMDocument $domDocument;
     private array $modifiers = [];
 
-    public function __construct(FileRegular $html)
+    /**
+     * @throws SourceException
+     * @throws Exception
+     */
+    public function __construct(FileRegularExistent $htmlFile)
     {
         $this->parser = new HTML5;
-        $this->domDocument = $this->parser->load($html, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
-        // LOAD INTERNAL CCS
-        // <link rel="contentsheet" href="..."> ...
-        foreach ($this('link[rel="contentsheet"][href]') as $result) {
-            $ccs = new CcsFile(new FileRegular($result->getAttribute('href'), $html->getPath()));
-            $ccs->applyTo($this);
-            $result->parentNode->removeChild($result);
-        }
-        // <content> ... </content> ...
-        foreach ($this('content') as $result) {
-            $ccs = new CcsChunk($result->textContent, dir($html->getPath()));
-            $ccs->applyTo($this);
-            $result->parentNode->removeChild($result);
-        }
-        // <ELEM content="..."> ...
-        // foreach ($this('[content]') as $result) {
-        // TODO
-        // }
+        $this->domDocument = $this->parser->load($htmlFile, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
+        $this->ccsLinks($htmlFile);
+        $this->ccsNodes($htmlFile);
+        $this->ccsAttributes($htmlFile);
     }
 
     // implements $document('SELECTOR') ...
@@ -106,5 +96,45 @@ class Document
             $file .= $index;
         }
         return new FileRegular($file, $outputDir);
+    }
+
+    /**
+     * @param FileRegularExistent $htmlFile
+     * @return void
+     * @throws SourceException
+     * @throws Exception
+     */
+    private function ccsLinks(FileRegularExistent $htmlFile): void
+    {
+        foreach ($this('link[rel="contentsheet"][href]') as $result) {
+            $ccsFile = new FileRegularExistent($result->getAttribute('href'), $htmlFile->getPath());
+            $ccs = Ccs::fromFile($ccsFile);
+            $ccs->applyTo($this);
+            $result->remove();
+        }
+    }
+
+    /**
+     * @param FileRegularExistent $htmlFile
+     * @return void
+     * @throws SourceException
+     * @throws Exception
+     */
+    private function ccsNodes(FileRegularExistent $htmlFile): void
+    {
+        foreach ($this('content') as $result) {
+            $ccs = Ccs::fromString($result->textContent, $htmlFile->getPath());
+            $ccs->applyTo($this);
+            $result->remove();
+        }
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    private function ccsAttributes(FileRegularExistent $htmlFile): void
+    {
+        /** @noinspection PhpStatementHasEmptyBodyInspection */
+        foreach ($this('[content]') as $result) {
+        // TODO
+        }
     }
 }

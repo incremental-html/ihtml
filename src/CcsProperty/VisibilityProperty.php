@@ -23,12 +23,12 @@ class VisibilityProperty extends Property
         return in_array($params[0], [self::VISIBLE, self::HIDDEN]);
     }
 
-    public function apply(DOMElement $element)
+    public function apply(DOMElement $element): void
     {
         $this->applyLater($element, self::VISIBLE);
     }
 
-    public function render()
+    public function render(): void
     {
         foreach ($this->lates as $late) {
             $late->element->parentNode->removeChild($late->element);

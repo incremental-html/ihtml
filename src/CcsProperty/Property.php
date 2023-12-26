@@ -11,20 +11,40 @@ use Symfony\Component\DomCrawler\Crawler;
 
 abstract class Property
 {
-    public static function isValid(...$params): bool
-    {
-        return true;
-    }
-
-    abstract public function apply(DOMElement $element);
+    const DISPLAY = 1001;
+    const CONTENT = 1002;
+    const NONE = 1005;
+    const INHERIT = 1012;
 
     protected DOMDocument $domDocument;
     protected Crawler $domList;
     protected array $params;
+    protected array $lates = [];
 
-    public function __construct(DOMDocument $domdocument)
+    public function __construct(DOMDocument $domDocument)
     {
-        $this->domDocument = $domdocument;
+        $this->domDocument = $domDocument;
+    }
+
+    public static function ccsConstants(): array
+    {
+        return [
+            'display' => Property::DISPLAY,
+            'content' => Property::CONTENT,
+            'none' => Property::NONE,
+            'inherit' => Property::INHERIT,
+        ];
+    }
+
+    abstract public function apply(DOMElement $element): void;
+
+    public function render(): void
+    {
+    }
+
+    public static function isValid(...$params): bool
+    {
+        return true;
     }
 
     public function setList(Crawler $list): void
@@ -43,25 +63,6 @@ abstract class Property
         foreach ($this->domList as $entry) {
             $this->apply($entry);
         }
-    }
-
-    const DISPLAY = 1001;
-    const CONTENT = 1002;
-    const NONE = 1005;
-    const INHERIT = 1012;
-
-    public function render()
-    {
-    }
-
-    protected function domFragment($content): DOMDocumentFragment
-    {
-        $fragment = $this->domDocument->createDocumentFragment();
-        //$fragment->appendXML($content);
-        foreach (self::htmlToDOM($content, $this->domDocument) as $node) {
-            $fragment->appendChild($node);
-        }
-        return $fragment;
     }
 
     protected static function solveParams(array $params, DOMNode $entry): string
@@ -122,8 +123,6 @@ abstract class Property
         }
     }
 
-    protected $lates = [];
-
     public function latesExpandInherits()
     {
         $oldLates = $this->lates;
@@ -162,6 +161,15 @@ abstract class Property
         return each($res)['key'];
     }
 
+    protected function domFragment($content): DOMDocumentFragment
+    {
+        $fragment = $this->domDocument->createDocumentFragment();
+        foreach (self::htmlToDOM($content, $this->domDocument) as $node) {
+            $fragment->appendChild($node);
+        }
+        return $fragment;
+    }
+
     private static function htmlToDOM($html, $doc): array
     {
         $html5parser = new HTML5();
@@ -175,24 +183,15 @@ abstract class Property
         );
         return $children;
     }
-
-    public static function ccsConstants(): array
-    {
-        return [
-            'display' => Property::DISPLAY,
-            'content' => Property::CONTENT,
-            'none' => Property::NONE,
-            'inherit' => Property::INHERIT,
-        ];
-    }
 }
 
 class Late
 {
-    public $element;
+    public DOMElement $element;
     public $attribute;
+    private int $weight;
 
-    public function __construct($elem, $attr, int $weight = 0)
+    public function __construct(DOMElement $elem, $attr, int $weight = 0)
     {
         $this->element = $elem;
         $this->attribute = $attr;
