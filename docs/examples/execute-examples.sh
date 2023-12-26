@@ -22,13 +22,13 @@ ihtml static-html-bundles/html5up-stellar/generic.html \
       -o example-file-whitespace/generated.html
 diff -w static-html-bundles/html5up-stellar/generic.html \
         example-file-whitespace/generated.html \
-        > example-file-whitespace/report
+        > example-file-whitespace/report.txt
 
 #
 # inheritance analysis example
 #
 ihtml -e example-file-inheritance/ccs/hierarchy.ccs \
-      > example-file-inheritance/report
+      > example-file-inheritance/report.txt
 
 #
 # Classes example
@@ -38,4 +38,4 @@ ihtml static-html-bundles/html5up-stellar/generic.html \
       -o example-file-class/generated.html
 diff -w static-html-bundles/html5up-stellar/generic.html \
      example-file-class/generated.html \
-     > example-file-class/report
+     > example-file-class/report.txt

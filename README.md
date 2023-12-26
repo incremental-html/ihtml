@@ -26,16 +26,18 @@ sudo phar-composer build https://github.com/incremental-html/ihtml.git:dev-maste
 
 ## Use cases
 * HTML Inheritance
-* Site Structure (pages, sections, etc...)
+* Site structure (pages, sections, etc...)
 * Modularization (separate ads, sidebar, ecc...)
-* Data compiling
-and then
-* Multilanguage support (site multilanguage structure and labels system)
-* Template engines code injection (Twig, Smarty, etc...)
-* CMS (title and content, Markdown, BBcode, HTML, text plain, etc...)
-and again
+* Content injection
+
+and then:
+* CMS (title and content, Markdown, BB-code, HTML, text plain, etc...)
+* Template engines code injection (Twig, Mustache, Smarty, etc...)
+* Multi-language support (site multi-language structure and labels system)
+
+* and again:
 * Sanitization (removing every not-allowed content in a tag)
-* Minify (WTF?!!)
+* Minify
 
 ## Integration
 * **SASS/SCSS**, to structure your code
@@ -51,9 +53,6 @@ TODO
   * `attribute: "title" none;` to remove the attribute
   * `attribute: "title" visibile/hidden;` to hide (may be shown again)
   * `attribute: "title" "My new content" content;` to concatenate
-* add property `class`:
-  * `class: "my-class" visibile;` to add the class
-  * `class: "my-class" hidden;` to remove it
 * add property `ldjson`:
   * `ldjson: "./title" "My title"` to set path
 * add property `style`:
