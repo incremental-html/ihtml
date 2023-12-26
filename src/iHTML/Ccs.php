@@ -81,17 +81,17 @@ class Ccs
         return $inheritance;
     }
 
-//    private function solveValues($values, array $constants = [])
+//    private function solveValues($values, array $ccsConstants = [])
 //    {
 //        return array_map(
 //        /**
 //         * @throws Exception
 //         */
-//            function ($value) use ($constants) {
+//            function ($value) use ($ccsConstants) {
 //                if ($value instanceof CssString) {
 //                    return $value->getString();
-//                } elseif (is_string($value) && isset($constants[$value])) {
-//                    return $constants[$value];
+//                } elseif (is_string($value) && isset($ccsConstants[$value])) {
+//                    return $ccsConstants[$value];
 //                } else {
 //                    throw new Exception("$value unrecognized");
 //                }
@@ -112,7 +112,7 @@ class Ccs
         $values = collect($declaration->values)
             ->map(fn($value) => match (true) {
                 $value instanceof CSSString => $value->getString(),
-                is_string($value) => $methodClass::constants()[$value] ?? throw new Exception("Constant `$value` not defined."),
+                is_string($value) => $methodClass::ccsConstants()[$value] ?? throw new Exception("Constant `$value` not defined."),
                 default => throw new Exception("Value $value not recognized."),
             })
         ;

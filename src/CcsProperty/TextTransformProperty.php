@@ -36,18 +36,15 @@ class TextTransformProperty extends Property
     public function render(): void
     {
         parent::latesExpandInherits();
-
         $transforms = [
             self::LOWERCASE => 'strtolower',
             self::UPPERCASE => 'strtoupper',
             self::CAPITALIZE => 'ucwords',
         ];
-
         foreach ($this->lates as $late) {
             if ($late->attribute == self::NONE) {
                 continue;
             }
-
             // replace in all text child nodes
             for ($i = 0; $i < $late->element->childNodes->length; $i++) {
                 $childNode = $late->element->childNodes[$i];

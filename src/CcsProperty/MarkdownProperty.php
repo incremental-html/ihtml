@@ -7,26 +7,17 @@ use Parsedown;
 
 class MarkdownProperty extends Property
 {
-    public Parsedown $parser;
-
-    public function __construct($domDocument)
-    {
-        parent::__construct($domDocument);
-
-        $this->parser = new Parsedown();
-    }
-
     public function apply(DOMElement $element): void
     {
+        $parser = new Parsedown();
         $content = static::solveParams($this->params, $element);
-
-        $content = $this->parser->text($content);
-
+        $content = $parser->text($content);
         while ($element->hasChildNodes()) {
             $element->removeChild($element->firstChild);
         }
-        if ($content) {
-            $element->appendChild($this->domFragment($content));
+        if (!$content) {
+            return;
         }
+        $element->appendChild($this->domFragment($content));
     }
 }

@@ -16,14 +16,14 @@ abstract class Property
     const NONE = 1005;
     const INHERIT = 1012;
 
-    protected DOMDocument $domDocument;
     protected Crawler $domList;
     protected array $params;
     protected array $lates = [];
 
-    public function __construct(DOMDocument $domDocument)
+    public function __construct(
+        protected DOMDocument $domDocument,
+    )
     {
-        $this->domDocument = $domDocument;
     }
 
     public static function ccsConstants(): array
@@ -84,12 +84,12 @@ abstract class Property
                         $content[] = $entry->ownerDocument->saveHTML($childNode);
                     }
                     break;
-                case $param === self::TEXT:
+//                case $param === self::TEXT:
                     // TODO
-                    break;
-                case $param instanceof ATTR and $param->value === self::CONTENT:
-                    $param = $entry->getAttribute($c->name);
-                    break;
+//                    break;
+//                case $param instanceof ATTR and $param->value === self::CONTENT:
+//                    $param = $entry->getAttribute($c->name);
+//                    break;
                 //case $param instanceof ATTR and $param->value === self::DISPLAY:
                 // TODO
                 //break;
@@ -104,14 +104,14 @@ abstract class Property
         return implode($content);
     }
 
-    public function applyLater(DOMElement $element, $defaultValue)
+    public function applyLater(DOMElement $element, $defaultValue): void
     {
         $attribute = $this->params[0];
 
         // addElementToHierarchy
 
         // if exists, removes it
-        if (($key = $this->array_usearch($element, $this->lates, function ($a, $b) {
+        if (($key = Property::array_uSearch($element, $this->lates, function ($a, $b) {
                 return $a->element === $b;
             })) !== false) {
             array_splice($this->lates, $key, 1);
@@ -137,7 +137,7 @@ abstract class Property
         foreach ($oldLates as $oldLate) {
             // expand single element (apply to all children the prop)
             foreach ((new Crawler($oldLate->element))->filter('*') as $childElement) {
-                if (($key = $this->array_usearch($childElement, $this->lates, function ($a, $b) {
+                if (($key = Property::array_uSearch($childElement, $this->lates, function ($a, $b) {
                         return $a->element === $b;
                     })) !== false) {
                     array_splice($this->lates, $key, 1);
@@ -148,17 +148,13 @@ abstract class Property
         }
     }
 
-    private function array_usearch($needle, array $haystack, callable $callback)
+    private static function array_uSearch($needle, array $haystack, callable $callback): false|int|string
     {
         $res = array_filter($haystack, function ($var) use ($needle, $callback) {
             return $callback($var, $needle);
         });
 
-        if (count($res) == 0) {
-            return false;
-        }
-
-        return each($res)['key'];
+        return array_keys($res)[0] ?? false;
     }
 
     protected function domFragment($content): DOMDocumentFragment

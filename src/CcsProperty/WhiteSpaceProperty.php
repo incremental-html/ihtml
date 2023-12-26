@@ -20,7 +20,7 @@ class WhiteSpaceProperty extends Property
 
     //const INITIAL = 1011; // Sets this property to its default value. Read about initial
 
-    public static function constants(): array
+    public static function ccsConstants(): array
     {
         $ccsConstants = parent::ccsConstants();
         return $ccsConstants + [
