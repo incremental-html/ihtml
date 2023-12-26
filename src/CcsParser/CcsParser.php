@@ -30,6 +30,7 @@ class CcsParser
 
     /**
      * @throws CSS\Parsing\SourceException
+     * @throws Exception
      */
     public function parse(string $code, FileDirectoryExistent $root): self
     {

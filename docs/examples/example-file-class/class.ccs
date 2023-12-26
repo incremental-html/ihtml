@@ -1,0 +1,4 @@
+/* class hidden, visible */
+body {
+	class: "is-preload" hidden "is-load" visible;
+}
