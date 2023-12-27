@@ -242,11 +242,11 @@ ihtml -p <project> -s [<PORT>] [-t <static files dir>]
 }
 /**/
 <SELECTOR> {
-  class-<CLASSNAME>-visibility: visible | hidden;
+  class: "<CLASSNAME>" visible;
   /**/
-  class-<CLASSNAME>[-visibility]: visible | hidden;
-  /**/
-  [class-]GENERICNAME[-visibility]: visible | hidden;
+  class: "<CLASSNAME>" hidden;
+   /**/
+   class: "<CLASSNAME>" visible "<CLASSNAME>" hidden;
 }
 ```
 
