@@ -81,23 +81,6 @@ class Ccs
         return $inheritance;
     }
 
-//    private function solveValues($values, array $ccsConstants = [])
-//    {
-//        return array_map(
-//        /**
-//         * @throws Exception
-//         */
-//            function ($value) use ($ccsConstants) {
-//                if ($value instanceof CssString) {
-//                    return $value->getString();
-//                } elseif (is_string($value) && isset($ccsConstants[$value])) {
-//                    return $ccsConstants[$value];
-//                } else {
-//                    throw new Exception("$value unrecognized");
-//                }
-//            }, $values);
-//    }
-
     /**
      * @throws Exception
      */
