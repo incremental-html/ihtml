@@ -1,13 +1,8 @@
 {
-    "name": "davidedexuno/ihtml-php",
-    "description": "iHTML template engine (php version)",
+    "name":  "incremental-html/ihtml",
+    "description": "iHTML template engine",
     "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Davide Del Medico",
-            "email": "davide.dexuno@gmail.com"
-        }
-    ],
+    "authors": [],
     "minimum-stability": "stable",
     "bin": [
         "ihtml"
