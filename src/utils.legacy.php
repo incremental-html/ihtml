@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 const SELECTOR_NAME_REGEX = '-?[_a-zA-Z]+[_a-zA-Z0-9-]*';
 
-function selector_weight(string $selector, bool $important = false)
+function selector_weight(string $selector, bool $important = false): string
 {
     $important = $important ? 1 : 0; // !important
     $style = 0; // STYLE (e.g. style="rules")
@@ -52,12 +52,12 @@ function selector_weight(string $selector, bool $important = false)
     return $important . '.' . $style . '.' . $ids . '.' . $classes . '.' . $elements;
 }
 
-function weight_compare_gt(string $weight1, string $weight2)
+function weight_compare_gt(string $weight1, string $weight2): bool|int
 {
     return version_compare($weight1, $weight2, '>');
 }
 
-function selectors_weight(string ...$selectors)
+function selectors_weight(string ...$selectors): string
 {
     $selector_weight = '0.0.0.0.0'; // starts with lowest
 
@@ -72,7 +72,7 @@ function selectors_weight(string ...$selectors)
     return $selector_weight;
 }
 
-function getMimetype($file)
+function getMimetype($file): false|string
 {
     return [
         'css' => 'text/css',

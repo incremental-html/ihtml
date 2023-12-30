@@ -11,6 +11,7 @@
         "php": ">=8.2",
         "ext-dom": "*",
         "ext-libxml": "*",
+        "ext-fileinfo": "*",
         "danog/class-finder": "^0.4.8",
         "erusev/parsedown": "^1.7",
         "jbbcode/jbbcode": "^1.4",
