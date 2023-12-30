@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\Filesystem;
 
@@ -6,7 +7,7 @@ use Exception;
 
 trait FileExistent
 {
-    public function __construct(string $filename, ?string $workingDir = null)
+    public function __construct(string $filename, ?FileDirectoryExistent $workingDir = null)
     {
         parent::__construct($filename, $workingDir);
         $this->mustExist();

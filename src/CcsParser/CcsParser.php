@@ -1,14 +1,11 @@
 <?php
-
+declare(strict_types=1);
 
 namespace iHTML\CcsParser;
 
 use Closure;
 use Exception;
 use iHTML\Filesystem\FileDirectoryExistent;
-use iHTML\Filesystem\FileRegular;
-use iHTML\Filesystem\FileRegularExistent;
-use iHTML\iHTML\Ccs;
 use Sabberworm\CSS;
 
 class CcsParser

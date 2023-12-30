@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\iHTML;
 
@@ -22,7 +23,7 @@ class Project
     {
         $this->directory = $directory;
         $manifest = new FileRegularExistent("project.yaml", $this->directory);
-        $manifest = (object)Yaml::parseFile($manifest);
+        $manifest = (object)Yaml::parseFile((string)$manifest);
         $this->resources = collect($manifest->resources)->map(
             fn($input, $output) => new ProjectResource($input, $output, $this->directory)
         )->values();
@@ -42,7 +43,7 @@ class Project
             $document->render();
             $document->save(
                 $resource->getOutput(),
-                $outputDir,
+                new FileDirectoryExistent((string)$outputDir),
                 ...($index ? [$index] : [])
             );
         });

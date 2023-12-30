@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
-use function in_array;
 
 /** @noinspection PhpUnused */
 
@@ -37,7 +37,11 @@ class VisibilityProperty extends Property
         if (!in_array($params[0], $valid)) {
             throw new Exception("Bad parameters: " . json_encode($params));
         }
-        $later = Property::applyLater($list, $params, self::VISIBLE);
+        $later = parent::applyLater(
+            $list,
+            $params[0],
+            self::VISIBLE,
+        );
         foreach ($later as $late) {
             $late->element->parentNode->removeChild($late->element);
         }

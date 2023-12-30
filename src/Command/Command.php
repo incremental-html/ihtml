@@ -16,6 +16,11 @@ use Throwable;
 
 class Command
 {
+    private static FileDirectoryExistent $workingDir;
+
+    /**
+     * @throws Exception
+     */
     public static function execute(): void
     {
         $getOpt = new GetOpt([
@@ -34,6 +39,7 @@ class Command
         $options = $getOpt->getOptions();
         $operands = $getOpt->getOperands();
 
+        self::$workingDir = new FileDirectoryExistent(getcwd());
         try {
             switch (true) {
                 case isset($options['h']):
@@ -42,13 +48,13 @@ class Command
                 case isset($options['s']):
                     self::startServer(
                         $options['s'] != 1 ? $options['s'] : '1337',
-                        $options['p'] ?? getcwd(),
+                        $options['p'] ?? self::$workingDir,
                         $options['t'],
                     );
                     break;
                 case isset($options['p']):
                     self::compileProject(
-                        $options['p'] != 1 ? $options['p'] : getcwd(),
+                        $options['p'] != 1 ? $options['p'] : self::$workingDir,
                         $options['o'] ?? null,
                         $options['i'] ?? null,
                     );
@@ -138,8 +144,8 @@ class Command
         ?string $index,
     ): void
     {
-        $projectDir = new FileDirectoryExistent($projectDir, getcwd());
-        $outputDir = new FileDirectory($outputDir, getcwd());
+        $projectDir = new FileDirectoryExistent($projectDir, self::$workingDir);
+        $outputDir = new FileDirectory($outputDir, self::$workingDir);
         $project = new Project($projectDir);
         $project->render($outputDir, $index);
         print 'Project compiled successfully' . "\n\n";
@@ -154,13 +160,13 @@ class Command
         ?string $output,
     ): void
     {
-        $documentFile = new FileRegularExistent($documentFile, getcwd());
-        $ccsFile = new FileRegularExistent($ccsFile, getcwd());
+        $documentFile = new FileRegularExistent($documentFile, self::$workingDir);
+        $ccsFile = new FileRegularExistent($ccsFile, self::$workingDir);
         $document = new Document($documentFile);
         $ccs = Ccs::fromFile($ccsFile);
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save($output, getcwd());
+            $document->save($output, self::$workingDir);
         } else {
             $document->print();
         }
@@ -177,13 +183,13 @@ class Command
         ?string $output,
     ): void
     {
-        $documentFile = new FileRegularExistent($documentFile, getcwd());
+        $documentFile = new FileRegularExistent($documentFile, self::$workingDir);
         $ccsRoot = new FileDirectoryExistent($ccsRoot);
         $document = new Document($documentFile);
         $ccs = Ccs::fromString($ccsCode, $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save($output, getcwd());
+            $document->save($output, self::$workingDir);
         } else {
             $document->print();
         }
@@ -199,13 +205,13 @@ class Command
         ?string $output,
     ): void
     {
-        $documentFile = new FileRegularExistent($documentFile, getcwd());
+        $documentFile = new FileRegularExistent($documentFile, self::$workingDir);
         $document = new Document($documentFile);
         $ccsRoot = new FileDirectoryExistent($ccsRoot);
         $ccs = Ccs::fromString(file_get_contents('php://stdin'), $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
-            $document->save($output, getcwd());
+            $document->save($output, self::$workingDir);
         } else {
             $document->print();
         }
@@ -226,7 +232,7 @@ class Command
             ;
         };
 
-        $ccsFile = new FileRegularExistent($ccsFile, getcwd());
+        $ccsFile = new FileRegularExistent($ccsFile, self::$workingDir);
         $ccs = Ccs::fromFile($ccsFile);
         $inheritance = $ccs->getInheritance();
         print 'Hierarchy:' . "\n\n";

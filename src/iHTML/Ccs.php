@@ -1,11 +1,12 @@
 <?php
-
+declare(strict_types=1);
 
 namespace iHTML\iHTML;
 
 use Exception;
 use iHTML\CcsParser\CcsDeclaration;
 use iHTML\CcsParser\CcsParser;
+use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
 use Sabberworm\CSS\Parsing\SourceException;
@@ -92,6 +93,7 @@ class Ccs
         if (!class_exists($methodClass)) {
             throw new Exception("Class `$methodClass` not implemented for method `$method`.");
         }
+        /** @var Property $methodClass */
         $values = collect($declaration->values)
             ->map(fn($value) => match (true) {
                 $value instanceof CSSString => $value->getString(),

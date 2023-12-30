@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\Filesystem;
 
@@ -15,13 +16,13 @@ use Symfony\Component\Filesystem\Path;
 abstract class File
 {
     protected string $path;
-    protected ?string $workingDir;
+    protected ?FileDirectoryExistent $workingDir;
     protected SplFileInfo $info;
 
     /**
      * @throws Exception
      */
-    public function __construct(string $filename, ?string $workingDir = null)
+    public function __construct(string $filename, ?FileDirectoryExistent $workingDir = null)
     {
         if (Path::isRelative($filename) && !$workingDir) {
             throw new Exception("Relative path $filename without working dir is not allowed.");
@@ -41,7 +42,7 @@ abstract class File
      */
     protected function mustExist(): void
     {
-        if (!file_exists($this)) {
+        if (!file_exists($this->getAbsolute())) {
             throw new Exception("$this does not exist.");
         }
     }
@@ -50,9 +51,12 @@ abstract class File
     {
         return Path::isAbsolute($this->path) ?
             $this->path :
-            Path::makeAbsolute($this->path, $this->workingDir);
+            Path::makeAbsolute($this->path, $this->workingDir->getAbsolute());
     }
 
+    /**
+     * @throws Exception
+     */
     public function getPath(): FileDirectory
     {
         return new FileDirectory($this->info->getPath());

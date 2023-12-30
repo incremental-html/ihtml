@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
+use DOMElement;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -27,6 +29,7 @@ class ClassProperty extends Property
     public static function apply(Crawler $list, array $params): void
     {
         foreach ($list as $element) {
+            /** @var DOMElement $element */
             if (count($params) % 2 > 0) {
                 throw new Exception('Wrong `class` property values count');
             }

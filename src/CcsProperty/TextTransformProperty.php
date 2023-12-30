@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
 use DOMText;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
-use function in_array;
 
 /** @noinspection PhpUnused */
 
@@ -45,7 +45,11 @@ class TextTransformProperty extends Property
         if (!in_array($params[0], $valid)) {
             throw new Exception("Bad parameters: " . json_encode($params));
         }
-        $later = Property::applyLater($list, $params, self::INHERIT);
+        $later = parent::applyLater(
+            $list,
+            $params[0],
+            self::INHERIT,
+        );
         $later = parent::laterExpandInherits($later);
         $transforms = [
             self::LOWERCASE => 'strtolower',

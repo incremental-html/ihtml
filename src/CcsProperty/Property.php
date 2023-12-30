@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
@@ -58,39 +59,19 @@ abstract class Property
                         $content[] = $entry->ownerDocument->saveHTML($childNode);
                     }
                     break;
-//                case $param === self::TEXT:
-                // TODO
-//                    break;
-//                case $param instanceof ATTR and $param->value === self::CONTENT:
-//                    $param = $entry->getAttribute($c->name);
-//                    break;
-                //case $param instanceof ATTR and $param->value === self::DISPLAY:
-                // TODO
-                //break;
-                //case $param instanceof STYLE and $param->value === self::CONTENT:
-                // TODO
-                //break;
-                //case $param instanceof STYLE and $param->value === self::DISPLAY:
-                // TODO
-                //break;
             }
         }
         return implode($content);
     }
 
-    public static function applyLater(Crawler $list, array $params, $defaultValue): array
+    public static function applyLater(Crawler $list, $attribute, $defaultValue): array
     {
         $laterList = [];
         foreach ($list as $element) {
-            $attribute = $params[0];
-            // addElementToHierarchy
-            // if exists, removes it
-            if (($key = Property::array_uSearch($element, $laterList, function ($a, $b) {
-                    return $a->element === $b;
-                })) !== false) {
-                array_splice($laterList, $key, 1);
-            }
-            // if not default, adds it
+            $laterList = array_filter(
+                $laterList,
+                fn($var) => $var->element !== $element,
+            );
             if ($attribute != $defaultValue) {
                 $laterList[] = new Late($element, $attribute);
             }
@@ -101,31 +82,22 @@ abstract class Property
     public static function laterExpandInherits($laterList): array
     {
         // sorting by depth (asc)
-        usort($laterList, function ($a, $b) {
-            return substr_count($a->element->getNodePath(), '/') - substr_count($b->element->getNodePath(), '/');
-        });
+        usort(
+            $laterList,
+            fn($a, $b) =>
+                substr_count($a->element->getNodePath(), '/') -
+                substr_count($b->element->getNodePath(), '/')
+        );
         // expand
         $newLateList = [];
-        foreach ($laterList as $oldLate) {
-            // expand single element (apply to all children the prop)
-            foreach ((new Crawler($oldLate->element))->filter('*') as $childElement) {
-                if (($key = Property::array_uSearch($childElement, $newLateList, function ($a, $b) {
-                        return $a->element === $b;
-                    })) !== false) {
-                    array_splice($newLateList, $key, 1);
-                }
-                $newLateList[] = new Late($childElement, $oldLate->attribute);
+        foreach ($laterList as $late) {
+            // expand single element (apply property to all children)
+            foreach ((new Crawler($late->element))->filter('*') as $childElement) {
+                $newLateList = array_filter($newLateList, fn($var) => $var->element !== $childElement);
+                $newLateList[] = new Late($childElement, $late->attribute);
             }
         }
         return $newLateList;
-    }
-
-    private static function array_uSearch($needle, array $haystack, callable $callback): false|int|string
-    {
-        $res = array_filter($haystack, function ($var) use ($needle, $callback) {
-            return $callback($var, $needle);
-        });
-        return array_keys($res)[0] ?? false;
     }
 
     protected static function domFragment($content, DOMDocument $domDocument): DOMDocumentFragment
@@ -156,7 +128,7 @@ abstract class Property
 class Late
 {
     public DOMElement $element;
-    public $attribute;
+    public mixed $attribute;
     private int $weight;
 
     public function __construct(DOMElement $elem, $attr, int $weight = 0)

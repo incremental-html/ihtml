@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\iHTML;
 
 use DOMDocument;
 use DOMElement;
 use Exception;
+use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Masterminds\HTML5;
@@ -38,15 +40,14 @@ class Document
     }
 
     // final rendering
-    public function render(): Document
+    public function render(): void
     {
-        return $this;
     }
 
     /**
      * @throws Exception
      */
-    public function save(string $output, string $outputDir, string $index = "index.html"): Document
+    public function save(string $output, FileDirectoryExistent $outputDir, string $index = "index.html"): Document
     {
         $file = self::fileFromResource($output, $index, $outputDir);
         $file->getPath()->create();
@@ -79,13 +80,9 @@ class Document
     }
 
     /**
-     * @param string $output
-     * @param string $index
-     * @param string $outputDir
-     * @return FileRegular
      * @throws Exception
      */
-    private static function fileFromResource(string $output, string $index, string $outputDir): FileRegular
+    private static function fileFromResource(string $output, string $index, FileDirectoryExistent $outputDir): FileRegular
     {
         $file = $output ?: './';
         if (str_ends_with($file, '/')) {
