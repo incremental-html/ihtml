@@ -3,7 +3,9 @@
 namespace iHTML\iHTML;
 
 use DOMDocument;
+use DOMElement;
 use Exception;
+use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Masterminds\HTML5;
@@ -71,7 +73,7 @@ class Document
     /**
      * @throws Exception
      */
-    public function getModifier(string $modifier)
+    public function getModifier(string $modifier): Property
     {
         // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
         $modifierClass = '\\iHTML\\CcsProperty\\' . u($modifier)->title() . 'Property';
@@ -133,8 +135,10 @@ class Document
     private function ccsAttributes(FileRegularExistent $htmlFile): void
     {
         /** @noinspection PhpStatementHasEmptyBodyInspection */
+        /** @noinspection PhpUnusedLocalVariableInspection */
         foreach ($this('[content]') as $result) {
-        // TODO
+            /** @var DOMElement $result */
+            // TODO
         }
     }
 }
