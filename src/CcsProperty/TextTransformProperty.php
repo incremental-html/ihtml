@@ -5,6 +5,7 @@ namespace iHTML\CcsProperty;
 use DOMText;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
+use function in_array;
 
 /** @noinspection PhpUnused */
 
@@ -31,7 +32,17 @@ class TextTransformProperty extends Property
      */
     public static function apply(Crawler $list, array $params): void
     {
-        if (!self::isValid(...$params)) {
+        if (count($params) > 1) {
+            throw new Exception("Bad parameters count: " . json_encode($params));
+        }
+        $valid = [
+            TextTransformProperty::UPPERCASE,
+            TextTransformProperty::LOWERCASE,
+            TextTransformProperty::CAPITALIZE,
+            TextTransformProperty::NONE,
+            Property::INHERIT,
+        ];
+        if (!in_array($params[0], $valid)) {
             throw new Exception("Bad parameters: " . json_encode($params));
         }
         $later = Property::applyLater($list, $params, self::INHERIT);
@@ -54,10 +65,5 @@ class TextTransformProperty extends Property
                 }
             }
         }
-    }
-
-    private static function isValid(...$params): bool
-    {
-        return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
     }
 }
