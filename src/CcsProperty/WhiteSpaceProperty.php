@@ -2,16 +2,14 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
 use DOMText;
+use Exception;
+use Symfony\Component\DomCrawler\Crawler;
+
+/** @noinspection PhpUnused */
 
 class WhiteSpaceProperty extends Property
 {
-    public static function isValid(...$params): bool
-    {
-        return in_array($params[0], [self::NORMAL, self::NOWRAP, self::PRE, self::PRELINE, self::PREWRAP, self::INHERIT]);
-    }
-
     const NORMAL = 1006; // collapse: W+N      Text wrap: when necessary
     const NOWRAP = 1007; // collapse: W+N      Text wrap: preserve
     const PRE = 1008; // collapse: -        Text wrap: preserve
@@ -32,27 +30,26 @@ class WhiteSpaceProperty extends Property
             ];
     }
 
-    public function apply(DOMElement $element): void
+    /**
+     * @throws Exception
+     */
+    public static function apply(Crawler $list, array $params): void
     {
-        $this->applyLater($element, self::INHERIT);
-    }
-
-    public function render(): void
-    {
-        parent::latesExpandInherits();
-
+        if (!self::isValid(...$params)) {
+            throw new Exception("Bad parameters: " . json_encode($params));
+        }
+        $later = Property::applyLater($list, $params, self::INHERIT);
+        $later = parent::laterExpandInherits($later);
         $regexes = [
             self::NORMAL => ['/[ \t\r\n]+/' => ' '],
             self::NOWRAP => ['/[ \t\r\n]+/' => ' '], // in future not wraps
             self::PRELINE => ['/[ \t]*[\r\n][ \t]*/' => "\n", '/[ \t]+/' => ' '],
             // PREWRAP like PRE and in future waps
         ];
-
-        foreach ($this->lates as $late) {
+        foreach ($later as $late) {
             if ($late->attribute == self::PRE) {
                 continue;
             }
-
             $regex = array_keys($regexes[$late->attribute]);
             $replace = array_values($regexes[$late->attribute]);
             // replace in all text child nodes
@@ -64,5 +61,10 @@ class WhiteSpaceProperty extends Property
                 }
             }
         }
+    }
+
+    private static function isValid(...$params): bool
+    {
+        return in_array($params[0], [self::NORMAL, self::NOWRAP, self::PRE, self::PRELINE, self::PREWRAP, self::INHERIT]);
     }
 }

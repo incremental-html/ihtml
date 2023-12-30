@@ -5,7 +5,6 @@ namespace iHTML\iHTML;
 use DOMDocument;
 use DOMElement;
 use Exception;
-use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Masterminds\HTML5;
@@ -17,7 +16,6 @@ class Document
 {
     private HTML5 $parser;
     private DOMDocument $domDocument;
-    private array $modifiers = [];
 
     /**
      * @throws SourceException
@@ -42,9 +40,6 @@ class Document
     // final rendering
     public function render(): Document
     {
-        foreach ($this->modifiers as $modifier) {
-            $modifier->render();
-        }
         return $this;
     }
 
@@ -73,15 +68,14 @@ class Document
     /**
      * @throws Exception
      */
-    public function getModifier(string $modifier): Property
+    public function getModifier(string $modifier): string
     {
         // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
         $modifierClass = '\\iHTML\\CcsProperty\\' . u($modifier)->title() . 'Property';
         if (!class_exists($modifierClass)) {
             throw new Exception("Class `$modifierClass` not implemented for method `$modifier`.");
         }
-        $this->modifiers[$modifier] = new $modifierClass($this->domDocument);
-        return $this->modifiers[$modifier];
+        return $modifierClass;
     }
 
     /**

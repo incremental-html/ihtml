@@ -2,31 +2,27 @@
 < <!DOCTYPE HTML>
 ---
 > <!DOCTYPE html>
-6,8c6
+6,14c6
 < -->
 < <html>
 < 	<head>
----
-> --><html><head>
-10,13c8,11
+< 		<title>Generic - Stellar by HTML5 UP</title>
 < 		<meta charset="utf-8" />
 < 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 < 		<link rel="stylesheet" href="assets/css/main.css" />
 < 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+< 	</head>
 ---
-> 		<meta charset="utf-8">
-> 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-> 		<link rel="stylesheet" href="assets/css/main.css">
-> 		<noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
-31c29
+> --><html><head> <title>Generic - Stellar by HTML5 UP</title> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> <link rel="stylesheet" href="assets/css/main.css"> <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript> </head>
+31c23
 < 								<span class="image main"><img src="images/pic04.jpg" alt="" /></span>
 ---
-> 								<span class="image main"><img src="images/pic04.jpg" alt></span>
-54c52
+> <span class="image main"><img src="images/pic04.jpg" alt></span>
+54c46
 < 								<dd>1234 Somewhere Road &bull; Nashville, TN 00000 &bull; USA</dd>
 ---
-> 								<dd>1234 Somewhere Road • Nashville, TN 00000 • USA</dd>
-68c66
+> <dd>1234 Somewhere Road • Nashville, TN 00000 • USA</dd>
+68c60
 < 						<p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
 ---
-> 						<p class="copyright">© Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+> <p class="copyright">© Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>

@@ -2,20 +2,23 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
+use Symfony\Component\DomCrawler\Crawler;
 
+/** @noinspection PhpUnused */
 class TextProperty extends Property
 {
-    public function apply(DOMElement $element): void
+    public static function apply(Crawler $list, array $params): void
     {
-        $content = static::solveParams($this->params, $element);
-        $content = nl2br(htmlentities($content));
-        while ($element->hasChildNodes()) {
-            $element->removeChild($element->firstChild);
+        foreach ($list as $element) {
+            $content = static::solveParams($params, $element);
+            $content = nl2br(htmlentities($content));
+            while ($element->hasChildNodes()) {
+                $element->removeChild($element->firstChild);
+            }
+            if (!$content) {
+                return;
+            }
+            $element->appendChild(Property::domFragment($content, $element->ownerDocument));
         }
-        if (!$content) {
-            return;
-        }
-        $element->appendChild($this->domFragment($content));
     }
 }

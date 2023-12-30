@@ -2,13 +2,17 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
+use Symfony\Component\DomCrawler\Crawler;
 
+/** @noinspection PhpUnused */
 class BorderProperty extends Property
 {
-    public function apply(DOMElement $element): void
+    public static function apply(Crawler $list, array $params): void
     {
-        $content = static::solveParams($this->params, $element);
-        $element->parentNode->replaceChild($this->domFragment($content), $element);
+        foreach ($list as $element) {
+            $content = static::solveParams($params, $element);
+            $html = Property::domFragment($content, $element->ownerDocument);
+            $element->parentNode->replaceChild($html, $element);
+        }
     }
 }

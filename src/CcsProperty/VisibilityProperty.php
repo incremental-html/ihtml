@@ -2,7 +2,10 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
+use Exception;
+use Symfony\Component\DomCrawler\Crawler;
+
+/** @noinspection PhpUnused */
 
 class VisibilityProperty extends Property
 {
@@ -18,20 +21,22 @@ class VisibilityProperty extends Property
         ];
     }
 
-    public static function isValid(...$params): bool
+    /**
+     * @throws Exception
+     */
+    public static function apply(Crawler $list, array $params): void
     {
-        return in_array($params[0], [self::VISIBLE, self::HIDDEN]);
-    }
-
-    public function apply(DOMElement $element): void
-    {
-        $this->applyLater($element, self::VISIBLE);
-    }
-
-    public function render(): void
-    {
-        foreach ($this->lates as $late) {
+        if (!self::isValid(...$params)) {
+            throw new Exception("Bad parameters: " . json_encode($params));
+        }
+        $later = Property::applyLater($list, $params, self::VISIBLE);
+        foreach ($later as $late) {
             $late->element->parentNode->removeChild($late->element);
         }
+    }
+
+    private static function isValid(...$params): bool
+    {
+        return in_array($params[0], [self::VISIBLE, self::HIDDEN]);
     }
 }

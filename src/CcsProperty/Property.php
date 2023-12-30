@@ -16,10 +16,6 @@ abstract class Property
     const NONE = 1005;
     const INHERIT = 1012;
 
-    protected Crawler $domList;
-    protected array $params;
-    protected array $lates = [];
-
     public function __construct(
         protected DOMDocument $domDocument,
     )
@@ -36,34 +32,12 @@ abstract class Property
         ];
     }
 
-    abstract public function apply(DOMElement $element): void;
-
-    public function render(): void
-    {
-    }
-
-    public static function isValid(...$params): bool
-    {
-        return true;
-    }
-
-    public function setList(Crawler $list): void
-    {
-        $this->domList = $list;
-    }
-
-    public function __invoke(...$params): void
-    {
-        if (!$this->isValid(...$params)) {
-            return;
-        } // or throw new Exception
-
-        $this->params = $params;
-
-        foreach ($this->domList as $entry) {
-            $this->apply($entry);
-        }
-    }
+    /**
+     * @param Crawler $list
+     * @param array $params
+     * @return void
+     */
+    abstract public static function apply(Crawler $list, array $params): void;
 
     protected static function solveParams(array $params, DOMNode $entry): string
     {
@@ -85,7 +59,7 @@ abstract class Property
                     }
                     break;
 //                case $param === self::TEXT:
-                    // TODO
+                // TODO
 //                    break;
 //                case $param instanceof ATTR and $param->value === self::CONTENT:
 //                    $param = $entry->getAttribute($c->name);
@@ -104,48 +78,46 @@ abstract class Property
         return implode($content);
     }
 
-    public function applyLater(DOMElement $element, $defaultValue): void
+    public static function applyLater(Crawler $list, array $params, $defaultValue): array
     {
-        $attribute = $this->params[0];
-
-        // addElementToHierarchy
-
-        // if exists, removes it
-        if (($key = Property::array_uSearch($element, $this->lates, function ($a, $b) {
-                return $a->element === $b;
-            })) !== false) {
-            array_splice($this->lates, $key, 1);
-        }
-
-        // if not default, adds it
-        if ($attribute != $defaultValue) {
-            $this->lates[] = new Late($element, $attribute);
-        }
-    }
-
-    public function latesExpandInherits()
-    {
-        $oldLates = $this->lates;
-
-        // sorting by depth (asc)
-        usort($oldLates, function ($a, $b) {
-            return substr_count($a->element->getNodePath(), '/') - substr_count($b->element->getNodePath(), '/');
-        });
-
-        // expand
-        $this->lates = [];
-        foreach ($oldLates as $oldLate) {
-            // expand single element (apply to all children the prop)
-            foreach ((new Crawler($oldLate->element))->filter('*') as $childElement) {
-                if (($key = Property::array_uSearch($childElement, $this->lates, function ($a, $b) {
-                        return $a->element === $b;
-                    })) !== false) {
-                    array_splice($this->lates, $key, 1);
-                }
-
-                $this->lates[] = new Late($childElement, $oldLate->attribute);
+        $laterList = [];
+        foreach ($list as $element) {
+            $attribute = $params[0];
+            // addElementToHierarchy
+            // if exists, removes it
+            if (($key = Property::array_uSearch($element, $laterList, function ($a, $b) {
+                    return $a->element === $b;
+                })) !== false) {
+                array_splice($laterList, $key, 1);
+            }
+            // if not default, adds it
+            if ($attribute != $defaultValue) {
+                $laterList[] = new Late($element, $attribute);
             }
         }
+        return $laterList;
+    }
+
+    public static function laterExpandInherits($laterList): array
+    {
+        // sorting by depth (asc)
+        usort($laterList, function ($a, $b) {
+            return substr_count($a->element->getNodePath(), '/') - substr_count($b->element->getNodePath(), '/');
+        });
+        // expand
+        $newLateList = [];
+        foreach ($laterList as $oldLate) {
+            // expand single element (apply to all children the prop)
+            foreach ((new Crawler($oldLate->element))->filter('*') as $childElement) {
+                if (($key = Property::array_uSearch($childElement, $newLateList, function ($a, $b) {
+                        return $a->element === $b;
+                    })) !== false) {
+                    array_splice($newLateList, $key, 1);
+                }
+                $newLateList[] = new Late($childElement, $oldLate->attribute);
+            }
+        }
+        return $newLateList;
     }
 
     private static function array_uSearch($needle, array $haystack, callable $callback): false|int|string
@@ -153,14 +125,13 @@ abstract class Property
         $res = array_filter($haystack, function ($var) use ($needle, $callback) {
             return $callback($var, $needle);
         });
-
         return array_keys($res)[0] ?? false;
     }
 
-    protected function domFragment($content): DOMDocumentFragment
+    protected static function domFragment($content, DOMDocument $domDocument): DOMDocumentFragment
     {
-        $fragment = $this->domDocument->createDocumentFragment();
-        foreach (self::htmlToDOM($content, $this->domDocument) as $node) {
+        $fragment = $domDocument->createDocumentFragment();
+        foreach (self::htmlToDOM($content, $domDocument) as $node) {
             $fragment->appendChild($node);
         }
         return $fragment;
@@ -173,6 +144,7 @@ abstract class Property
             ->loadHTML('<div id="html-to-dom-input-wrapper">' . $html . '</div>')
             ->getElementById('html-to-dom-input-wrapper')
         ;
+        /** @var array $children */
         $children = array_map(
             fn($childNode) => $doc->importNode($childNode, true),
             iterator_to_array($wrapper->childNodes)

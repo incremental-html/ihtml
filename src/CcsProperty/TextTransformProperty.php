@@ -2,8 +2,11 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
 use DOMText;
+use Exception;
+use Symfony\Component\DomCrawler\Crawler;
+
+/** @noinspection PhpUnused */
 
 class TextTransformProperty extends Property
 {
@@ -23,25 +26,22 @@ class TextTransformProperty extends Property
             ];
     }
 
-    public static function isValid(...$params): bool
+    /**
+     * @throws Exception
+     */
+    public static function apply(Crawler $list, array $params): void
     {
-        return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
-    }
-
-    public function apply(DOMElement $element): void
-    {
-        $this->applyLater($element, self::INHERIT);
-    }
-
-    public function render(): void
-    {
-        parent::latesExpandInherits();
+        if (!self::isValid(...$params)) {
+            throw new Exception("Bad parameters: " . json_encode($params));
+        }
+        $later = Property::applyLater($list, $params, self::INHERIT);
+        $later = parent::laterExpandInherits($later);
         $transforms = [
             self::LOWERCASE => 'strtolower',
             self::UPPERCASE => 'strtoupper',
             self::CAPITALIZE => 'ucwords',
         ];
-        foreach ($this->lates as $late) {
+        foreach ($later as $late) {
             if ($late->attribute == self::NONE) {
                 continue;
             }
@@ -54,5 +54,10 @@ class TextTransformProperty extends Property
                 }
             }
         }
+    }
+
+    private static function isValid(...$params): bool
+    {
+        return in_array($params[0], [self::UPPERCASE, self::LOWERCASE, self::CAPITALIZE, self::INHERIT]);
     }
 }

@@ -2,24 +2,28 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
 use JBBCode\DefaultCodeDefinitionSet;
 use JBBCode\Parser;
+use Symfony\Component\DomCrawler\Crawler;
 
+/** @noinspection PhpUnused */
 class BbcodeProperty extends Property
 {
-    public function apply(DOMElement $element): void
+    public static function apply(Crawler $list, array $params): void
     {
         $parser = new Parser();
         $parser->addCodeDefinitionSet(new DefaultCodeDefinitionSet());
-        $content = static::solveParams($this->params, $element);
-        $content = $parser->parse($content)->getAsHtml();
-        while ($element->hasChildNodes()) {
-            $element->removeChild($element->firstChild);
+        foreach ($list as $element) {
+            $content = static::solveParams($params, $element);
+            $content = $parser->parse($content)->getAsHtml();
+            while ($element->hasChildNodes()) {
+                $element->removeChild($element->firstChild);
+            }
+            if (!$content) {
+                break;
+            }
+            $html = Property::domFragment($content, $element->ownerDocument);
+            $element->appendChild($html);
         }
-        if (!$content) {
-            return;
-        }
-        $element->appendChild($this->domFragment($content));
     }
 }

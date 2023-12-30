@@ -2,22 +2,25 @@
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
 use Parsedown;
+use Symfony\Component\DomCrawler\Crawler;
 
+/** @noinspection PhpUnused */
 class MarkdownProperty extends Property
 {
-    public function apply(DOMElement $element): void
+    public static function apply(Crawler $list, array $params): void
     {
-        $parser = new Parsedown();
-        $content = static::solveParams($this->params, $element);
-        $content = $parser->text($content);
-        while ($element->hasChildNodes()) {
-            $element->removeChild($element->firstChild);
+        foreach ($list as $element) {
+            $parser = new Parsedown();
+            $content = static::solveParams($params, $element);
+            $content = $parser->text($content);
+            while ($element->hasChildNodes()) {
+                $element->removeChild($element->firstChild);
+            }
+            if (!$content) {
+                return;
+            }
+            $element->appendChild(Property::domFragment($content, $element->ownerDocument));
         }
-        if (!$content) {
-            return;
-        }
-        $element->appendChild($this->domFragment($content));
     }
 }
