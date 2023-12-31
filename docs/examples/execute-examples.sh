@@ -4,7 +4,7 @@
 #
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 export PATH="$PATH:$SCRIPT_DIR/../.."
-set -o xtrace
+# set -o xtrace
 
 cd docs/examples/ || exit
 

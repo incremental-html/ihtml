@@ -148,7 +148,7 @@ class Command
         $outputDir = new FileDirectory($outputDir, self::$workingDir);
         $project = new Project($projectDir);
         $project->render($outputDir, $index);
-        print 'Project compiled successfully' . "\n\n";
+        print "Project\n$projectDir\ncompiled successfully\n\n";
     }
 
     /**
@@ -170,7 +170,7 @@ class Command
         } else {
             $document->print();
         }
-        print 'File compiled successfully' . "\n\n";
+        print "File\n$ccsFile\ncompiled successfully\n\n";
     }
 
     /**
@@ -193,7 +193,7 @@ class Command
         } else {
             $document->print();
         }
-        print 'Ccs code applied successfully' . "\n\n";
+        print "Ccs code\n$ccsCode\napplied successfully\n\n";
     }
 
     /**
@@ -208,14 +208,15 @@ class Command
         $documentFile = new FileRegularExistent($documentFile, self::$workingDir);
         $document = new Document($documentFile);
         $ccsRoot = new FileDirectoryExistent($ccsRoot);
-        $ccs = Ccs::fromString(file_get_contents('php://stdin'), $ccsRoot);
+        $ccsCode = file_get_contents('php://stdin');
+        $ccs = Ccs::fromString($ccsCode, $ccsRoot);
         $ccs->applyTo($document);
         if (isset($output)) {
             $document->save($output, self::$workingDir);
         } else {
             $document->print();
         }
-        print 'Ccs code applied successfully' . "\n\n";
+        print "Ccs code\n$ccsCode\napplied successfully\n\n";
     }
 
     /**
