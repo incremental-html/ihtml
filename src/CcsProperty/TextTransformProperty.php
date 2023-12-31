@@ -7,6 +7,7 @@ use DOMDocument;
 use DOMElement;
 use DOMText;
 use Exception;
+use iHTML\CcsProperty\Traits\InheritanceTrait;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */

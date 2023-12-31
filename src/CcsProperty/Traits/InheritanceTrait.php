@@ -1,8 +1,9 @@
 <?php
 
-namespace iHTML\CcsProperty;
+namespace iHTML\CcsProperty\Traits;
 
 use DOMDocument;
+use iHTML\CcsProperty\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 trait InheritanceTrait

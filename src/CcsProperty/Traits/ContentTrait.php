@@ -1,6 +1,6 @@
 <?php
 
-namespace iHTML\CcsProperty;
+namespace iHTML\CcsProperty\Traits;
 
 use DOMDocument;
 use DOMDocumentFragment;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace iHTML\CcsProperty;
 
 use DOMDocument;
+use iHTML\CcsProperty\Traits\ContentTrait;
 use Parsedown;
 use Symfony\Component\DomCrawler\Crawler;
 
