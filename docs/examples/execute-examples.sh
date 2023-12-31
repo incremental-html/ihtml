@@ -39,3 +39,10 @@ ihtml static-html-bundles/html5up-stellar/generic.html \
 diff -w static-html-bundles/html5up-stellar/generic.html \
      example-file-class/generated.html \
      > example-file-class/report.txt
+
+#
+# example of url() inside a code snippet
+#
+ihtml static-html-bundles/html5up-stellar/generic.html \
+      -r '#header p { content: "Lorem ipsum: " url(example-file-urlincode/snippet.ihtml) }' \
+      -o example-file-urlincode/generated.html -v
