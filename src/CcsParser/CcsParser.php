@@ -36,7 +36,7 @@ class CcsParser
         foreach ($oCssParser->getContents() as $oContent) {
             switch (true) {
                 case $oContent instanceof CSS\Property\Import:
-                    $url = $oContent->atRuleArgs()[0]->getUrl()->getString();
+                    $url = $oContent->atRuleArgs()[0]->getURL()->getString();
                     $this->onImportExecute($url, $root);
                     break;
                 case $oContent instanceof CSS\RuleSet\DeclarationBlock:
@@ -51,7 +51,7 @@ class CcsParser
                         ->map(fn($oRule) => new CcsDeclaration($oRule, $root))
                         ->toArray()
                     ;
-                    // selectors_weight(...$oContent->getSelectors()); // TODO
+                    // selectors_weight(...$oContent->getSelectors()); // TODO: implement selectors_weight
                     $selectors = $oContent->getSelectors();
                     $this->onRuleExecute($selectors, $declarations);
                     break;
