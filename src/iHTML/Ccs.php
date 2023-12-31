@@ -13,10 +13,14 @@ use Illuminate\Support\Collection;
 use Sabberworm\CSS\Value\CSSString;
 use function Symfony\Component\String\u;
 
-class Ccs
+readonly class Ccs
 {
-    protected string $code;
-    protected FileDirectoryExistent $root;
+    public function __construct(
+        protected string $code,
+        protected FileDirectoryExistent $root,
+    )
+    {
+    }
 
     public static function fromFile(FileRegularExistent $file): Ccs
     {
@@ -26,12 +30,6 @@ class Ccs
     public static function fromString(string $code, FileDirectoryExistent $root): self
     {
         return new self($code, $root);
-    }
-
-    public function __construct(string $code, FileDirectoryExistent $root)
-    {
-        $this->code = $code;
-        $this->root = $root;
     }
 
     public function getInheritance(): array
