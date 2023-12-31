@@ -27,7 +27,7 @@ trait ContentTrait
         /** @var array $children */
         $children = array_map(
             fn($childNode) => $doc->importNode($childNode, true),
-            iterator_to_array($wrapper->childNodes)
+            iterator_to_array($wrapper->childNodes),
         );
         return $children;
     }

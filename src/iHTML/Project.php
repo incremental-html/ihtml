@@ -22,10 +22,10 @@ class Project
     public function __construct(FileDirectoryExistent $directory)
     {
         $this->directory = $directory;
-        $manifest = new FileRegularExistent("project.yaml", $this->directory);
+        $manifest = new FileRegularExistent('project.yaml', $this->directory);
         $manifest = (object)Yaml::parseFile((string)$manifest);
         $this->resources = collect($manifest->resources)->map(
-            fn($input, $output) => new ProjectResource($input, $output, $this->directory)
+            fn($input, $output) => new ProjectResource($input, $output, $this->directory),
         )->values();
     }
 
@@ -43,7 +43,7 @@ class Project
             $document->save(
                 $resource->getOutput(),
                 new FileDirectoryExistent((string)$outputDir),
-                ...($index ? [$index] : [])
+                ...($index ? [$index] : []),
             );
         });
     }

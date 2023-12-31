@@ -18,7 +18,7 @@ class Document
 {
     private HTML5 $parser;
     private DOMDocument $domDocument;
-    private array $renders =[];
+    private array $renders = [];
 
     /**
      * @throws SourceException

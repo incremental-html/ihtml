@@ -4,10 +4,7 @@ declare(strict_types=1);
 namespace iHTML\CcsProperty;
 
 use DOMDocument;
-use DOMDocumentFragment;
-use DOMElement;
 use DOMNode;
-use Masterminds\HTML5;
 use Symfony\Component\DomCrawler\Crawler;
 
 abstract class Property

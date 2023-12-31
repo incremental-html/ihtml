@@ -28,11 +28,11 @@ class CcsDeclaration
                 new CSS\Value\CSSString(
                     (
                     new FileRegularExistent($v->getURL()->getString(), $root)
-                    )->contents()
+                    )->contents(),
                 ) :
                 // var(--something) ? ... :
                 $v,
-            $this->values
+            $this->values,
         );
     }
 }
