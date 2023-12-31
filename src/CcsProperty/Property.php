@@ -13,6 +13,12 @@ abstract class Property
     public const CONTENT = 1002;
     public const NONE = 1005;
     public const INHERIT = 1012;
+    public const CCS = [
+        'display' => Property::DISPLAY,
+        'content' => Property::CONTENT,
+        'none' => Property::NONE,
+        'inherit' => Property::INHERIT,
+    ];
 
     public function __construct(
         protected DOMDocument $domDocument,
@@ -23,16 +29,6 @@ abstract class Property
     abstract public static function apply(Crawler $list, array $params): void;
 
     abstract public static function render(DOMDocument $domDocument): void;
-
-    public static function ccsConstants(): array
-    {
-        return [
-            'display' => Property::DISPLAY,
-            'content' => Property::CONTENT,
-            'none' => Property::NONE,
-            'inherit' => Property::INHERIT,
-        ];
-    }
 
     protected static function solveParams(array $params, DOMNode $entry): string
     {

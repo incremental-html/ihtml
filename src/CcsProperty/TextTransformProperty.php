@@ -18,6 +18,12 @@ class TextTransformProperty extends Property
     public const UPPERCASE = 1014;
     public const CAPITALIZE = 1015;
     public const NONE = 1016;
+    public const CCS = parent::CCS + [
+        'uppercase' => TextTransformProperty::UPPERCASE,
+        'lowercase' => TextTransformProperty::LOWERCASE,
+        'capitalize' => TextTransformProperty::CAPITALIZE,
+        'none' => TextTransformProperty::NONE,
+    ];
     private const TRANSFORMATIONS = [
         self::LOWERCASE => 'strtolower',
         self::UPPERCASE => 'strtoupper',
@@ -57,17 +63,6 @@ class TextTransformProperty extends Property
         foreach ($list as $element) {
             self::applyToElement($element, $attributeName);
         }
-    }
-
-    public static function ccsConstants(): array
-    {
-        $ccsConstants = parent::ccsConstants();
-        return $ccsConstants + [
-                'uppercase' => TextTransformProperty::UPPERCASE,
-                'lowercase' => TextTransformProperty::LOWERCASE,
-                'capitalize' => TextTransformProperty::CAPITALIZE,
-                'none' => TextTransformProperty::NONE,
-            ];
     }
 
     private static function applyToElement(DOMElement $element, string $attributeName): void

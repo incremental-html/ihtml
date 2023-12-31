@@ -96,7 +96,7 @@ class Ccs
         return collect($declaration->values)
             ->map(fn($value) => match (true) {
                 $value instanceof CSSString => $value->getString(),
-                is_string($value) => $propertyClass::ccsConstants()[$value] ?? throw new Exception("Constant `$value` not defined."),
+                is_string($value) => $propertyClass::CCS[$value] ?? throw new Exception("Constant `$value` not defined."),
                 default => throw new Exception("Value $value not recognized."),
             })
         ;

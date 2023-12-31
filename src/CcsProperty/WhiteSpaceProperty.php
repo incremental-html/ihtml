@@ -20,6 +20,13 @@ class WhiteSpaceProperty extends Property
     public const PRELINE = 1009; // collapse: W        Text wrap: when necessary
     public const PREWRAP = 1010; // collapse: -        Text wrap: when necessary
     // public const INITIAL = 1011; // Sets this property to its default value. Read about initial
+    public const CCS = parent::CCS + [
+        'normal' => WhiteSpaceProperty::NORMAL,
+        'nowrap' => WhiteSpaceProperty::NOWRAP,
+        'pre' => WhiteSpaceProperty::PRE,
+        'pre-line' => WhiteSpaceProperty::PRELINE,
+        'pre-wrap' => WhiteSpaceProperty::PREWRAP,
+    ];
     private const REGEX = [
         self::NORMAL => ['/[ \t\r\n]+/' => ' '],
         self::NOWRAP => ['/[ \t\r\n]+/' => ' '], // in future not wraps
@@ -66,18 +73,6 @@ class WhiteSpaceProperty extends Property
         foreach ($list as $element) {
             self::applyToElement($element, $attributeName);
         }
-    }
-
-    public static function ccsConstants(): array
-    {
-        $ccsConstants = parent::ccsConstants();
-        return $ccsConstants + [
-                'normal' => WhiteSpaceProperty::NORMAL,
-                'nowrap' => WhiteSpaceProperty::NOWRAP,
-                'pre' => WhiteSpaceProperty::PRE,
-                'pre-line' => WhiteSpaceProperty::PRELINE,
-                'pre-wrap' => WhiteSpaceProperty::PREWRAP,
-            ];
     }
 
     private static function applyToElement(DOMElement $element, string $attributeName): void

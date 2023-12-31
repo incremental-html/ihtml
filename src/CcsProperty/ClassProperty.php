@@ -15,6 +15,11 @@ class ClassProperty extends Property
     public const VISIBLE = 1003;
     public const HIDDEN = 1004;
 
+    public const CCS = [
+        'visible' => VisibilityProperty::VISIBLE,
+        'hidden' => VisibilityProperty::HIDDEN,
+    ];
+
     /**
      * @throws Exception
      */
@@ -51,15 +56,6 @@ class ClassProperty extends Property
                 $element->setAttribute('class', $classList);
             }
         }
-    }
-
-    public static function ccsConstants(): array
-    {
-        parent::ccsConstants();
-        return [
-            'visible' => VisibilityProperty::VISIBLE,
-            'hidden' => VisibilityProperty::HIDDEN,
-        ];
     }
 
     public static function render(DOMDocument $domDocument): void

@@ -15,6 +15,10 @@ class VisibilityProperty extends Property
 {
     public const VISIBLE = 1003;
     public const HIDDEN = 1004;
+    public const CCS = [
+        'visible' => VisibilityProperty::VISIBLE,
+        'hidden' => VisibilityProperty::HIDDEN,
+    ];
 
     use InheritanceTrait;
 
@@ -54,14 +58,5 @@ class VisibilityProperty extends Property
                 $element->remove();
             }
         }
-    }
-
-    public static function ccsConstants(): array
-    {
-        parent::ccsConstants();
-        return [
-            'visible' => VisibilityProperty::VISIBLE,
-            'hidden' => VisibilityProperty::HIDDEN,
-        ];
     }
 }
