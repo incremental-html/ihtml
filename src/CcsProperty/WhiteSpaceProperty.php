@@ -58,6 +58,7 @@ class WhiteSpaceProperty extends Property
             throw new Exception('Bad parameters: ' . json_encode($params));
         }
         foreach ($list as $element) {
+            /** @var DOMElement $element */
             $element->setAttribute('data-whitespace', (string)$params[0]);
         }
     }

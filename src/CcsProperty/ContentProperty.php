@@ -21,7 +21,7 @@ class ContentProperty extends Property
                 $element->removeChild($element->firstChild);
             }
             if (!$content) {
-                return;
+                continue;
             }
             $element->appendChild(self::domFragment($content, $element->ownerDocument));
         }
