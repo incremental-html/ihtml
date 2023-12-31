@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace iHTML\CcsProperty\Traits;
 
 use DOMDocument;
-use iHTML\CcsProperty\DOMElement;
+use DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 trait InheritanceTrait
