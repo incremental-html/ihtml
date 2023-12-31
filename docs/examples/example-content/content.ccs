@@ -1,0 +1,15 @@
+#header h1 {
+    content: "My title";
+}
+
+#header h1 {
+    content: var(--content) " with addition";
+}
+
+#main {
+    display: "<main>" var(--content) "</main>";
+}
+
+#footer section:first-child {
+    display: "<aside>" var(--display) "</aside>";
+}

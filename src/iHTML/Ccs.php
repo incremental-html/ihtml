@@ -10,6 +10,7 @@ use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
 use Illuminate\Support\Collection;
+use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\CSSString;
 use function Symfony\Component\String\u;
 
@@ -95,6 +96,14 @@ readonly class Ccs
             ->map(fn($value) => match (true) {
                 $value instanceof CSSString => $value->getString(),
                 is_string($value) => $propertyClass::CCS[$value] ?? throw new Exception("Constant `$value` not defined."),
+                $value instanceof CSSFunction && $value->getName() === 'var' =>
+                match ($value->getArguments()[0]) {
+                    '--content' => fn($element) => collect($element->childNodes)
+                        ->map(fn($n) => $element->ownerDocument->saveHTML($n))
+                        ->join(''),
+                    '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
+                    default => throw new Exception("var({$value->getArguments()[0]}) not supported."),
+                },
                 default => throw new Exception("Value $value not recognized."),
             })
         ;

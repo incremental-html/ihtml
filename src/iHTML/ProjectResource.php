@@ -7,7 +7,7 @@ use Exception;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
 
-class ProjectResource
+readonly class ProjectResource
 {
     private string $html;
     private string $apply;

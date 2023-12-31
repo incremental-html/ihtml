@@ -10,7 +10,7 @@ use iHTML\Filesystem\FileRegularExistent;
 use Illuminate\Support\Collection;
 use Symfony\Component\Yaml\Yaml;
 
-class Project
+readonly class Project
 {
     private FileDirectoryExistent $directory;
 

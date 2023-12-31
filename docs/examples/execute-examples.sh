@@ -47,6 +47,12 @@ ihtml static-html-bundles/html5up-stellar/generic.html \
       example-file-style/style.ccs \
       -o example-file-style/generated.html -v
 
+#
+# Content manipulation example
+#
+ihtml static-html-bundles/html5up-stellar/generic.html \
+      example-content/content.ccs \
+      -o example-content/generated.html -v
 
 #
 # example of url() inside a code snippet

@@ -14,11 +14,12 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WhiteSpaceProperty extends Property
 {
-    public const NORMAL = 1006;  // collapse: W+N      Text wrap: when necessary
-    public const NOWRAP = 1007;  // collapse: W+N      Text wrap: preserve
-    public const PRE = 1008;     // collapse: -        Text wrap: preserve
-    public const PRELINE = 1009; // collapse: W        Text wrap: when necessary
-    public const PREWRAP = 1010; // collapse: -        Text wrap: when necessary
+    public const INHERIT = 1005;  // collapse: W+N      Text wrap: when necessary
+    public const NORMAL = 1006;   // collapse: W+N      Text wrap: when necessary
+    public const NOWRAP = 1007;   // collapse: W+N      Text wrap: preserve
+    public const PRE = 1008;      // collapse: -        Text wrap: preserve
+    public const PRELINE = 1009;  // collapse: W        Text wrap: when necessary
+    public const PREWRAP = 1010;  // collapse: -        Text wrap: when necessary
     // public const INITIAL = 1011; // Sets this property to its default value. Read about initial
     public const CCS = parent::CCS + [
         'normal' => WhiteSpaceProperty::NORMAL,
@@ -52,7 +53,7 @@ class WhiteSpaceProperty extends Property
             WhiteSpaceProperty::PRE,
             WhiteSpaceProperty::PRELINE,
             WhiteSpaceProperty::PREWRAP,
-            Property::INHERIT,
+            WhiteSpaceProperty::INHERIT,
         ];
         if (!in_array($params[0], $valid)) {
             throw new Exception('Bad parameters: ' . json_encode($params));

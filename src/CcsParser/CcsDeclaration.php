@@ -17,20 +17,19 @@ class CcsDeclaration
     {
         $this->property = $oRule->getRule();
         $this->rawValue = (string)$oRule->getValue();
-        $this->values = $oRule->getValue() instanceof CSS\Value\RuleValueList ?
-            $oRule->getValue()->getListComponents() :
-            [$oRule->getValue()];
-        $this->values = array_map(
+        $this->values =
+            $oRule->getValue() instanceof CSS\Value\RuleValueList ?
+                $oRule->getValue()->getListComponents() :
+                [$oRule->getValue()];
         /**
          * @throws Exception
          */
+        $this->values = array_map(
             fn($v) => $v instanceof CSS\Value\URL ?
                 new CSS\Value\CSSString(
-                    (
-                    new FileRegularExistent($v->getURL()->getString(), $root)
-                    )->contents(),
+                    (new FileRegularExistent($v->getURL()->getString(), $root))
+                        ->contents(),
                 ) :
-                // var(--something) ? ... :
                 $v,
             $this->values,
         );

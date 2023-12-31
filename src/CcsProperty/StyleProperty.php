@@ -12,8 +12,14 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class StyleProperty extends Property
 {
+    public const NONE = 2005;
     // public const VISIBLE = 2006;
     // public const HIDDEN = 2007;
+    public const CCS = [
+        'none' => self::NONE,
+        // 'visible' => self::VISIBLE,
+        // 'hidden' => self::HIDDEN,
+    ];
 
     public static function apply(Crawler $list, array $params): void
     {
@@ -30,7 +36,7 @@ class StyleProperty extends Property
                 }
                 $stylesMap[$styleProperty] = $styleValue;
             }
-            if(empty($stylesMap)){
+            if (empty($stylesMap)) {
                 $element->removeAttribute('style');
             } else {
                 $styleAttribute = self::renderStyleAttribute($stylesMap);
