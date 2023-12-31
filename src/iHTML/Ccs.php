@@ -102,7 +102,7 @@ readonly class Ccs
                         ->map(fn($n) => $element->ownerDocument->saveHTML($n))
                         ->join(''),
                     '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
-                    default => throw new Exception("var({$value->getArguments()[0]}) not supported."),
+                    default => throw new Exception("Variable {$value->getArguments()[0]} not supported."),
                 },
                 default => throw new Exception("Value $value not recognized."),
             })
