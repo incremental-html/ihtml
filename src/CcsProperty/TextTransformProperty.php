@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
+use DOMDocument;
+use DOMElement;
 use DOMText;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
@@ -11,10 +13,50 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class TextTransformProperty extends Property
 {
-    const LOWERCASE = 1013;
-    const UPPERCASE = 1014;
-    const CAPITALIZE = 1015;
-    const NONE = 1016;
+    public const LOWERCASE = 1013;
+    public const UPPERCASE = 1014;
+    public const CAPITALIZE = 1015;
+    public const NONE = 1016;
+    private const TRANSFORMATIONS = [
+        self::LOWERCASE => 'strtolower',
+        self::UPPERCASE => 'strtoupper',
+        self::CAPITALIZE => 'ucwords',
+    ];
+
+    use InheritanceTrait;
+
+    public static function apply(Crawler $list, array $params): void
+    {
+        if (count($params) > 1) {
+            throw new Exception('Bad parameters count: ' . json_encode($params));
+        }
+        $valid = [
+            TextTransformProperty::UPPERCASE,
+            TextTransformProperty::LOWERCASE,
+            TextTransformProperty::CAPITALIZE,
+            TextTransformProperty::NONE,
+            Property::INHERIT,
+        ];
+        if (!in_array($params[0], $valid)) {
+            throw new Exception('Bad parameters: ' . json_encode($params));
+        }
+        foreach ($list as $element) {
+            /** @var DOMElement $element */
+            $element->setAttribute('data-text-transform', (string)$params[0]);
+        }
+    }
+
+    public static function render(DOMDocument $domDocument): void
+    {
+        $attributeName = 'data-text-transform';
+        self::expandAttribute($attributeName, $domDocument);
+        $list = (new Crawler($domDocument))
+            ->filter("[$attributeName]")
+        ;
+        foreach ($list as $element) {
+            self::applyToElement($element, $attributeName);
+        }
+    }
 
     public static function ccsConstants(): array
     {
@@ -27,46 +69,18 @@ class TextTransformProperty extends Property
             ];
     }
 
-    /**
-     * @throws Exception
-     */
-    public static function apply(Crawler $list, array $params): void
+    private static function applyToElement(DOMElement $element, string $attributeName): void
     {
-        if (count($params) > 1) {
-            throw new Exception("Bad parameters count: " . json_encode($params));
+        $attribute = $element->getAttribute($attributeName);
+        $element->removeAttribute($attributeName);
+        if ($attribute == self::NONE) {
+            return;
         }
-        $valid = [
-            TextTransformProperty::UPPERCASE,
-            TextTransformProperty::LOWERCASE,
-            TextTransformProperty::CAPITALIZE,
-            TextTransformProperty::NONE,
-            Property::INHERIT,
-        ];
-        if (!in_array($params[0], $valid)) {
-            throw new Exception("Bad parameters: " . json_encode($params));
-        }
-        $later = parent::applyLater(
-            $list,
-            $params[0],
-            self::INHERIT,
-        );
-        $later = parent::laterExpandInherits($later);
-        $transforms = [
-            self::LOWERCASE => 'strtolower',
-            self::UPPERCASE => 'strtoupper',
-            self::CAPITALIZE => 'ucwords',
-        ];
-        foreach ($later as $late) {
-            if ($late->attribute == self::NONE) {
-                continue;
-            }
-            // replace in all text child nodes
-            for ($i = 0; $i < $late->element->childNodes->length; $i++) {
-                $childNode = $late->element->childNodes[$i];
-                if ($childNode instanceof DOMText) {
-                    $text = $transforms[$late->attribute]($childNode->wholeText);
-                    $late->element->replaceChild($late->element->ownerDocument->createTextNode($text), $childNode);
-                }
+        for ($counter = 0; $counter < $element->childNodes->length; $counter++) {
+            $childNode = $element->childNodes[$counter];
+            if ($childNode instanceof DOMText) {
+                $text = self::TRANSFORMATIONS[$attribute]($childNode->wholeText);
+                $element->replaceChild($element->ownerDocument->createTextNode($text), $childNode);
             }
         }
     }

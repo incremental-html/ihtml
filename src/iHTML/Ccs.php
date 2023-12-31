@@ -9,7 +9,7 @@ use iHTML\CcsParser\CcsParser;
 use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
-use Sabberworm\CSS\Parsing\SourceException;
+use Illuminate\Support\Collection;
 use Sabberworm\CSS\Value\CSSString;
 use function Symfony\Component\String\u;
 
@@ -18,9 +18,6 @@ class Ccs
     protected string $code;
     protected FileDirectoryExistent $root;
 
-    /**
-     * @throws Exception
-     */
     public static function fromFile(FileRegularExistent $file): Ccs
     {
         return new self($file->contents(), $file->getPath());
@@ -37,40 +34,10 @@ class Ccs
         $this->root = $root;
     }
 
-    /**
-     * @throws SourceException
-     */
-    public function applyTo(Document $document): self
-    {
-        $parser = new CcsParser;
-        $parser
-            ->onImport(function (string $file) use ($document) {
-                $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
-                $ccs->applyTo($document);
-            })
-            ->onRule(function (array $selectors, array $declarations) use ($document) {
-                $query = $document(implode(',', $selectors));
-                if (!iterator_count($query)) {
-                    return;
-                }
-                foreach ($declarations as $declaration) {
-                    /** @var CcsDeclaration $declaration */
-                    $this->declarationApply($declaration, $query);
-                }
-            })
-        ;
-        $parser->parse($this->code, $this->root);
-        return $this;
-    }
-
-    /**
-     * @return array
-     * @throws SourceException
-     */
     public function getInheritance(): array
     {
         $inheritance = [];
-        $parser = new CcsParser;
+        $parser = new CcsParser();
         $parser
             ->onImport(function (string $file) use (&$inheritance) {
                 $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
@@ -82,25 +49,56 @@ class Ccs
         return $inheritance;
     }
 
-    /**
-     * @throws Exception
-     */
-    private function declarationApply(CcsDeclaration $declaration, DocumentQuery $query): void
+    public function applyTo(Document $document): self
     {
-        $property = $declaration->property;
-        $method = (string)u($property)->camel();
-        $methodClass = '\\iHTML\\CcsProperty\\' . u($method)->title() . 'Property';
-        if (!class_exists($methodClass)) {
-            throw new Exception("Class `$methodClass` not implemented for method `$method`.");
+        $parser = new CcsParser();
+        $parser
+            ->onImport(function (string $file) use ($document) {
+                $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
+                $ccs->applyTo($document);
+            })
+            ->onRule(function (array $selectors, array $declarations) use ($document) {
+                $query = $document(implode(',', $selectors));
+                if (!iterator_count($query)) {
+                    return;
+                }
+                foreach ($declarations as $declaration) {
+                    self::applyDeclaration($query, $declaration);
+                }
+            })
+        ;
+        $parser->parse($this->code, $this->root);
+        return $this;
+    }
+
+    private static function applyDeclaration(
+        DocumentQuery $query,
+        CcsDeclaration $declaration,
+    ): void
+    {
+        $method = self::getMethod($declaration);
+        $arguments = self::getValues($declaration);
+        $query->$method(...$arguments);
+    }
+
+    public static function getMethod(CcsDeclaration $declaration): string
+    {
+        return (string)u($declaration->property)->camel();
+    }
+
+    public static function getValues(CcsDeclaration $declaration): Collection
+    {
+        $propertyClass = '\\iHTML\\CcsProperty\\' . u($declaration->property)->camel()->title() . 'Property';
+        if (!class_exists($propertyClass)) {
+            throw new Exception("Class `$propertyClass` not implemented for property `$declaration->property`.");
         }
-        /** @var Property $methodClass */
-        $values = collect($declaration->values)
+        /** @var Property $propertyClass */
+        return collect($declaration->values)
             ->map(fn($value) => match (true) {
                 $value instanceof CSSString => $value->getString(),
-                is_string($value) => $methodClass::ccsConstants()[$value] ?? throw new Exception("Constant `$value` not defined."),
+                is_string($value) => $propertyClass::ccsConstants()[$value] ?? throw new Exception("Constant `$value` not defined."),
                 default => throw new Exception("Value $value not recognized."),
             })
         ;
-        $query->$method(...$values);
     }
 }

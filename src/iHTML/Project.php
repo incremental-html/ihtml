@@ -40,7 +40,6 @@ class Project
             $ccs = $resource->getCcs();
             $document = $resource->getDocument();
             $ccs->applyTo($document);
-            $document->render();
             $document->save(
                 $resource->getOutput(),
                 new FileDirectoryExistent((string)$outputDir),

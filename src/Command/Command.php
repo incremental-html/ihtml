@@ -139,8 +139,8 @@ class Command
      * @throws Exception
      */
     private static function compileProject(
-        string  $projectDir,
-        string  $outputDir,
+        string $projectDir,
+        string $outputDir,
         ?string $index,
     ): void
     {
@@ -155,8 +155,8 @@ class Command
      * @throws Exception
      */
     private static function compileFile(
-        string  $documentFile,
-        string  $ccsFile,
+        string $documentFile,
+        string $ccsFile,
         ?string $output,
     ): void
     {
@@ -177,9 +177,9 @@ class Command
      * @throws Exception
      */
     private static function applyFromParameter(
-        string  $documentFile,
-        string  $ccsCode,
-        string  $ccsRoot,
+        string $documentFile,
+        string $ccsCode,
+        string $ccsRoot,
         ?string $output,
     ): void
     {
@@ -200,8 +200,8 @@ class Command
      * @throws Exception
      */
     private static function compileFromStandardInput(
-        string  $documentFile,
-        string  $ccsRoot,
+        string $documentFile,
+        string $ccsRoot,
         ?string $output,
     ): void
     {

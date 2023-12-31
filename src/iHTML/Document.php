@@ -6,18 +6,19 @@ namespace iHTML\iHTML;
 use DOMDocument;
 use DOMElement;
 use Exception;
+use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
 use Masterminds\HTML5;
 use Sabberworm\CSS\Parsing\SourceException;
 use Symfony\Component\DomCrawler\Crawler;
-use function Symfony\Component\String\u;
 
 class Document
 {
     private HTML5 $parser;
     private DOMDocument $domDocument;
+    private array $renders =[];
 
     /**
      * @throws SourceException
@@ -25,14 +26,21 @@ class Document
      */
     public function __construct(FileRegularExistent $htmlFile)
     {
-        $this->parser = new HTML5;
-        $this->domDocument = $this->parser->load($htmlFile, [HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true]);
+        $this->parser = new HTML5();
+        $this->domDocument = $this->parser->load(
+            $htmlFile,
+            [
+                HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true,
+            ],
+        );
         $this->ccsLinks($htmlFile);
         $this->ccsNodes($htmlFile);
         $this->ccsAttributes($htmlFile);
     }
 
-    // implements $document('SELECTOR') ...
+    /**
+     * Implements $document('SELECTOR')
+     */
     public function __invoke($selector): DocumentQuery
     {
         $query = (new Crawler($this->domDocument))->filter($selector);
@@ -42,41 +50,39 @@ class Document
     // final rendering
     public function render(): void
     {
+        foreach ($this->renders as $renderClass => $ignored) {
+            /** @var Property $renderClass */
+            $renderClass::render($this->domDocument);
+        }
     }
 
     /**
      * @throws Exception
      */
-    public function save(string $output, FileDirectoryExistent $outputDir, string $index = "index.html"): Document
+    public function save(
+        string $output,
+        FileDirectoryExistent $outputDir,
+        string $index = 'index.html',
+    ): Document
     {
         $file = self::fileFromResource($output, $index, $outputDir);
         $file->getPath()->create();
+        $this->render();
         $this->parser->save($this->domDocument, $file);
         return $this;
     }
 
     public function print(): Document
     {
+        $this->render();
         print $this->parser->saveHTML($this->domDocument);
         return $this;
     }
 
     public function get(): string
     {
+        $this->render();
         return $this->parser->saveHTML($this->domDocument);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getModifier(string $modifier): string
-    {
-        // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
-        $modifierClass = '\\iHTML\\CcsProperty\\' . u($modifier)->title() . 'Property';
-        if (!class_exists($modifierClass)) {
-            throw new Exception("Class `$modifierClass` not implemented for method `$modifier`.");
-        }
-        return $modifierClass;
     }
 
     /**
@@ -129,7 +135,12 @@ class Document
         /** @noinspection PhpUnusedLocalVariableInspection */
         foreach ($this('[content]') as $result) {
             /** @var DOMElement $result */
-            // TODO
+            // TODO: to develop
         }
+    }
+
+    public function appendRender(string $modifierClass): void
+    {
+        $this->renders[$modifierClass] = true;
     }
 }

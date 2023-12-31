@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
+use DOMDocument;
 use DOMElement;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
@@ -11,17 +12,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ClassProperty extends Property
 {
-    const VISIBLE = 1003;
-    const HIDDEN = 1004;
-
-    public static function ccsConstants(): array
-    {
-        parent::ccsConstants();
-        return [
-            'visible' => VisibilityProperty::VISIBLE,
-            'hidden' => VisibilityProperty::HIDDEN,
-        ];
-    }
+    public const VISIBLE = 1003;
+    public const HIDDEN = 1004;
 
     /**
      * @throws Exception
@@ -59,5 +51,18 @@ class ClassProperty extends Property
                 $element->setAttribute('class', $classList);
             }
         }
+    }
+
+    public static function ccsConstants(): array
+    {
+        parent::ccsConstants();
+        return [
+            'visible' => VisibilityProperty::VISIBLE,
+            'hidden' => VisibilityProperty::HIDDEN,
+        ];
+    }
+
+    public static function render(DOMDocument $domDocument): void
+    {
     }
 }

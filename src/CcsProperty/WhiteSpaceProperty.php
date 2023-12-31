@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
+use DOMDocument;
+use DOMElement;
 use DOMText;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
@@ -11,13 +13,59 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WhiteSpaceProperty extends Property
 {
-    const NORMAL = 1006; // collapse: W+N      Text wrap: when necessary
-    const NOWRAP = 1007; // collapse: W+N      Text wrap: preserve
-    const PRE = 1008; // collapse: -        Text wrap: preserve
-    const PRELINE = 1009; // collapse: W        Text wrap: when necessary
-    const PREWRAP = 1010; // collapse: -        Text wrap: when necessary
+    public const NORMAL = 1006;  // collapse: W+N      Text wrap: when necessary
+    public const NOWRAP = 1007;  // collapse: W+N      Text wrap: preserve
+    public const PRE = 1008;     // collapse: -        Text wrap: preserve
+    public const PRELINE = 1009; // collapse: W        Text wrap: when necessary
+    public const PREWRAP = 1010; // collapse: -        Text wrap: when necessary
+    // public const INITIAL = 1011; // Sets this property to its default value. Read about initial
+    private const REGEX = [
+        self::NORMAL => ['/[ \t\r\n]+/' => ' '],
+        self::NOWRAP => ['/[ \t\r\n]+/' => ' '], // in future not wraps
+        self::PRELINE => ['/[ \t]*[\r\n][ \t]*/' => "\n", '/[ \t]+/' => ' '],
+        // PREWRAP like PRE and in future waps
+    ];
 
-    //const INITIAL = 1011; // Sets this property to its default value. Read about initial
+    use InheritanceTrait;
+
+    /**
+     * @throws Exception
+     */
+    public static function apply(Crawler $list, array $params): void
+    {
+        /** @var DOMElement[] $list */
+        if (count($params) > 1) {
+            throw new Exception('Bad parameters count: ' . json_encode($params));
+        }
+
+        $valid = [
+            WhiteSpaceProperty::NORMAL,
+            WhiteSpaceProperty::NOWRAP,
+            WhiteSpaceProperty::PRE,
+            WhiteSpaceProperty::PRELINE,
+            WhiteSpaceProperty::PREWRAP,
+            Property::INHERIT,
+        ];
+        if (!in_array($params[0], $valid)) {
+            throw new Exception('Bad parameters: ' . json_encode($params));
+        }
+        foreach ($list as $element) {
+            $element->setAttribute('data-whitespace', (string)$params[0]);
+        }
+    }
+
+    public static function render(DOMDocument $domDocument): void
+    {
+        $attributeName = 'data-whitespace';
+        // $default = self::INHERIT;
+        self::expandAttribute($attributeName, $domDocument);
+        $list = (new Crawler($domDocument))
+            ->filter("[$attributeName]")
+        ;
+        foreach ($list as $element) {
+            self::applyToElement($element, $attributeName);
+        }
+    }
 
     public static function ccsConstants(): array
     {
@@ -31,50 +79,22 @@ class WhiteSpaceProperty extends Property
             ];
     }
 
-    /**
-     * @throws Exception
-     */
-    public static function apply(Crawler $list, array $params): void
+    private static function applyToElement(DOMElement $element, string $attributeName): void
     {
-        if (count($params) > 1) {
-            throw new Exception("Bad parameters count: " . json_encode($params));
+        $attribute = $element->getAttribute($attributeName);
+        $element->removeAttribute($attributeName);
+        if ($attribute == self::PRE) {
+            return;
         }
-        $valid = [
-            WhiteSpaceProperty::NORMAL,
-            WhiteSpaceProperty::NOWRAP,
-            WhiteSpaceProperty::PRE,
-            WhiteSpaceProperty::PRELINE,
-            WhiteSpaceProperty::PREWRAP,
-            Property::INHERIT,
-        ];
-        if (!in_array($params[0], $valid)) {
-            throw new Exception("Bad parameters: " . json_encode($params));
-        }
-        $default = self::INHERIT;
-
-        $laterList = parent::applyLater($list, $params[0], $default);
-        $later = $laterList;
-        $later = parent::laterExpandInherits($later);
-        $regexes = [
-            self::NORMAL => ['/[ \t\r\n]+/' => ' '],
-            self::NOWRAP => ['/[ \t\r\n]+/' => ' '], // in future not wraps
-            self::PRELINE => ['/[ \t]*[\r\n][ \t]*/' => "\n", '/[ \t]+/' => ' '],
-            // PREWRAP like PRE and in future waps
-        ];
-        foreach ($later as $late) {
-            if ($late->attribute == self::PRE) {
+        $regex = array_keys(self::REGEX[$attribute]);
+        $replace = array_values(self::REGEX[$attribute]);
+        for ($counter = 0; $counter < $element->childNodes->length; $counter++) {
+            $childNode = $element->childNodes[$counter];
+            if (!$childNode instanceof DOMText) {
                 continue;
             }
-            $regex = array_keys($regexes[$late->attribute]);
-            $replace = array_values($regexes[$late->attribute]);
-            // replace in all text child nodes
-            for ($i = 0; $i < $late->element->childNodes->length; $i++) {
-                $childNode = $late->element->childNodes[$i];
-                if ($childNode instanceof DOMText) {
-                    $text = preg_replace($regex, $replace, $childNode->wholeText);
-                    $late->element->replaceChild($late->element->ownerDocument->createTextNode($text), $childNode);
-                }
-            }
+            $text = preg_replace($regex, $replace, $childNode->wholeText);
+            $element->replaceChild($element->ownerDocument->createTextNode($text), $childNode);
         }
     }
 }

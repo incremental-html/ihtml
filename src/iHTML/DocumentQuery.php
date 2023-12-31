@@ -7,30 +7,37 @@ use Exception;
 use iHTML\CcsProperty\Property;
 use IteratorAggregate;
 use Symfony\Component\DomCrawler\Crawler;
+use function Symfony\Component\String\u;
 
-class DocumentQuery implements IteratorAggregate
+readonly class DocumentQuery implements IteratorAggregate
 {
-    private Document $document;
-    private Crawler $query;
-
-    public function __construct(Document $document, Crawler $query)
+    public function __construct(
+        private Document $document,
+        private Crawler $query,
+    )
     {
-        $this->document = $document;
-        $this->query = $query;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function __call(string $modifierMethod, $arguments)
+    public function __call(string $method, array $arguments)
     {
-        $modifierClass = $this->document->getModifier($modifierMethod);
+        $modifierClass = $this->getPropertyClass($method);
         /** @var Property $modifierClass */
         $modifierClass::apply($this->query, $arguments);
+        $this->document->appendRender($modifierClass);
     }
 
     public function getIterator(): Crawler
     {
         return $this->query;
+    }
+
+    private function getPropertyClass(string $method): string
+    {
+        // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
+        $modifierClass = '\\iHTML\\CcsProperty\\' . u($method)->title() . 'Property';
+        if (!class_exists($modifierClass)) {
+            throw new Exception("Class `$modifierClass` not implemented for method `$method`.");
+        }
+        return $modifierClass;
     }
 }
