@@ -79,12 +79,12 @@ readonly class Ccs
         $query->$method(...$arguments);
     }
 
-    public static function getMethod(CcsDeclaration $declaration): string
+    private static function getMethod(CcsDeclaration $declaration): string
     {
         return (string)u($declaration->property)->camel();
     }
 
-    public static function getValues(CcsDeclaration $declaration): Collection
+    private static function getValues(CcsDeclaration $declaration): Collection
     {
         $propertyClass = '\\iHTML\\CcsProperty\\' . u($declaration->property)->camel()->title() . 'Property';
         if (!class_exists($propertyClass)) {
