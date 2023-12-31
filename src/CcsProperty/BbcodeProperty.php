@@ -26,7 +26,7 @@ class BbcodeProperty extends Property
                 $element->removeChild($element->firstChild);
             }
             if (!$content) {
-                break;
+                continue;
             }
             $html = self::domFragment($content, $element->ownerDocument);
             $element->appendChild($html);
