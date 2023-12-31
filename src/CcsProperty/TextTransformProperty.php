@@ -18,11 +18,13 @@ class TextTransformProperty extends Property
     public const UPPERCASE = 1014;
     public const CAPITALIZE = 1015;
     public const NONE = 1016;
+    public const INHERIT = 1017;
     public const CCS = parent::CCS + [
         'uppercase' => TextTransformProperty::UPPERCASE,
         'lowercase' => TextTransformProperty::LOWERCASE,
         'capitalize' => TextTransformProperty::CAPITALIZE,
         'none' => TextTransformProperty::NONE,
+        'inherit' => TextTransformProperty::INHERIT,
     ];
     private const TRANSFORMATIONS = [
         self::LOWERCASE => 'strtolower',
@@ -42,7 +44,7 @@ class TextTransformProperty extends Property
             TextTransformProperty::LOWERCASE,
             TextTransformProperty::CAPITALIZE,
             TextTransformProperty::NONE,
-            Property::INHERIT,
+            TextTransformProperty::INHERIT,
         ];
         if (!in_array($params[0], $valid)) {
             throw new Exception('Bad parameters: ' . json_encode($params));
