@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
+use Closure;
 use DOMDocument;
 use Exception;
 use Sabberworm\CSS\Value\CSSFunction;
@@ -30,16 +31,21 @@ abstract class Property
                 $value instanceof CSSString => $value->getString(),
                 is_string($value) => static::CCS[$value] ?? throw new Exception("Constant `$value` not defined."),
                 $value instanceof CSSFunction && $value->getName() === 'var' =>
-                match ($value->getArguments()[0]) {
-                    '--content' => fn($element) => collect($element->childNodes)
-                        ->map(fn($n) => $element->ownerDocument->saveHTML($n))
-                        ->join(''),
-                    '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
-                    default => throw new Exception("Variable {$value->getArguments()[0]} not supported."),
-                },
+                self::getVar($value->getArguments()[0]),
                 default => throw new Exception("Value $value not recognized."),
             })
             ->toArray()
         ;
+    }
+
+    public static function getVar($varName): Closure
+    {
+        return match ($varName) {
+            '--content' => fn($element) => collect($element->childNodes)
+                ->map(fn($n) => $element->ownerDocument->saveHTML($n))
+                ->join(''),
+            '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
+            default => throw new Exception("Variable {$varName} not supported."),
+        };
     }
 }

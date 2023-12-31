@@ -13,14 +13,14 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class VisibilityProperty extends Property
 {
+    use InheritanceTrait;
+
     public const VISIBLE = 1003;
     public const HIDDEN = 1004;
     public const CCS = [
-        'visible' => VisibilityProperty::VISIBLE,
-        'hidden' => VisibilityProperty::HIDDEN,
+        'visible' => self::VISIBLE,
+        'hidden' => self::HIDDEN,
     ];
-
-    use InheritanceTrait;
 
     /**
      * @throws Exception

@@ -14,6 +14,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WhiteSpaceProperty extends Property
 {
+    use InheritanceTrait;
+
     public const INHERIT = 1005;  // collapse: W+N      Text wrap: when necessary
     public const NORMAL = 1006;   // collapse: W+N      Text wrap: when necessary
     public const NOWRAP = 1007;   // collapse: W+N      Text wrap: preserve
@@ -22,11 +24,11 @@ class WhiteSpaceProperty extends Property
     public const PREWRAP = 1010;  // collapse: -        Text wrap: when necessary
     // public const INITIAL = 1011; // Sets this property to its default value. Read about initial
     public const CCS = parent::CCS + [
-        'normal' => WhiteSpaceProperty::NORMAL,
-        'nowrap' => WhiteSpaceProperty::NOWRAP,
-        'pre' => WhiteSpaceProperty::PRE,
-        'pre-line' => WhiteSpaceProperty::PRELINE,
-        'pre-wrap' => WhiteSpaceProperty::PREWRAP,
+        'normal' => self::NORMAL,
+        'nowrap' => self::NOWRAP,
+        'pre' => self::PRE,
+        'pre-line' => self::PRELINE,
+        'pre-wrap' => self::PREWRAP,
     ];
     private const REGEX = [
         self::NORMAL => ['/[ \t\r\n]+/' => ' '],
@@ -34,8 +36,6 @@ class WhiteSpaceProperty extends Property
         self::PRELINE => ['/[ \t]*[\r\n][ \t]*/' => "\n", '/[ \t]+/' => ' '],
         // PREWRAP like PRE and in future waps
     ];
-
-    use InheritanceTrait;
 
     /**
      * @throws Exception

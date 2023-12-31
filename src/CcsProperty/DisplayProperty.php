@@ -13,6 +13,11 @@ class DisplayProperty extends Property
 {
     use ContentTrait;
 
+    public const NONE = 1003;
+    public const CCS = [
+        'none' => self::NONE,
+    ];
+
     public static function apply(Crawler $list, array $params): void
     {
         foreach ($list as $element) {

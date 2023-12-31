@@ -14,25 +14,25 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class TextTransformProperty extends Property
 {
+    use InheritanceTrait;
+
     public const LOWERCASE = 1013;
     public const UPPERCASE = 1014;
     public const CAPITALIZE = 1015;
     public const NONE = 1016;
     public const INHERIT = 1017;
     public const CCS = parent::CCS + [
-        'uppercase' => TextTransformProperty::UPPERCASE,
-        'lowercase' => TextTransformProperty::LOWERCASE,
-        'capitalize' => TextTransformProperty::CAPITALIZE,
-        'none' => TextTransformProperty::NONE,
-        'inherit' => TextTransformProperty::INHERIT,
+        'uppercase' => self::UPPERCASE,
+        'lowercase' => self::LOWERCASE,
+        'capitalize' => self::CAPITALIZE,
+        'none' => self::NONE,
+        'inherit' => self::INHERIT,
     ];
     private const TRANSFORMATIONS = [
         self::LOWERCASE => 'strtolower',
         self::UPPERCASE => 'strtoupper',
         self::CAPITALIZE => 'ucwords',
     ];
-
-    use InheritanceTrait;
 
     public static function apply(Crawler $list, array $params): void
     {
