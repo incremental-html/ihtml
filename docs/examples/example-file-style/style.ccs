@@ -1,0 +1,11 @@
+#header p {
+    style: "display" "none";
+}
+
+#main {
+    style: "color" "black";
+}
+
+#main {
+	style: "color" none;
+}

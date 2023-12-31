@@ -41,6 +41,14 @@ diff -w static-html-bundles/html5up-stellar/generic.html \
      > example-file-class/report.txt
 
 #
+# Style example
+#
+ihtml static-html-bundles/html5up-stellar/generic.html \
+      example-file-style/style.ccs \
+      -o example-file-style/generated.html -v
+
+
+#
 # example of url() inside a code snippet
 #
 ihtml static-html-bundles/html5up-stellar/generic.html \
