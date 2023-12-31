@@ -5,7 +5,7 @@ namespace iHTML\Filesystem;
 
 use Exception;
 
-class FileDirectory extends File
+readonly class FileDirectory extends File
 {
     public function __construct(string $filename, ?FileDirectory $workingDir = null)
     {

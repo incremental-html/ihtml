@@ -6,7 +6,7 @@ namespace iHTML\Filesystem;
 use Exception;
 use SplFileObject;
 
-class FileRegular extends File
+readonly class FileRegular extends File
 {
     protected SplFileObject $object;
 

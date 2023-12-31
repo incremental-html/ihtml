@@ -13,7 +13,7 @@ use Symfony\Component\Filesystem\Path;
  *
  * @see https://www.scaler.com/topics/file-type-in-linux/
  */
-abstract class File
+readonly abstract class File
 {
     protected string $path;
     protected ?FileDirectoryExistent $workingDir;
