@@ -9,9 +9,6 @@ use iHTML\CcsParser\CcsParser;
 use iHTML\CcsProperty\Property;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegularExistent;
-use Illuminate\Support\Collection;
-use Sabberworm\CSS\Value\CSSFunction;
-use Sabberworm\CSS\Value\CSSString;
 use function Symfony\Component\String\u;
 
 readonly class Ccs
@@ -85,27 +82,13 @@ readonly class Ccs
         return (string)u($declaration->property)->camel();
     }
 
-    private static function getValues(CcsDeclaration $declaration): Collection
+    private static function getValues(CcsDeclaration $declaration): array
     {
         $propertyClass = '\\iHTML\\CcsProperty\\' . u($declaration->property)->camel()->title() . 'Property';
         if (!class_exists($propertyClass)) {
             throw new Exception("Class `$propertyClass` not implemented for property `$declaration->property`.");
         }
         /** @var Property $propertyClass */
-        return collect($declaration->values)
-            ->map(fn($value) => match (true) {
-                $value instanceof CSSString => $value->getString(),
-                is_string($value) => $propertyClass::CCS[$value] ?? throw new Exception("Constant `$value` not defined."),
-                $value instanceof CSSFunction && $value->getName() === 'var' =>
-                match ($value->getArguments()[0]) {
-                    '--content' => fn($element) => collect($element->childNodes)
-                        ->map(fn($n) => $element->ownerDocument->saveHTML($n))
-                        ->join(''),
-                    '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
-                    default => throw new Exception("Variable {$value->getArguments()[0]} not supported."),
-                },
-                default => throw new Exception("Value $value not recognized."),
-            })
-        ;
+        return $propertyClass::convertPropertyValues($declaration->values);
     }
 }
