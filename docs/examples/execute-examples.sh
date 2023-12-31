@@ -12,14 +12,14 @@ cd docs/examples/ || exit
 # project example
 #
 ihtml -p example-project-website/project/ \
-      -o example-project-website/generated/
+      -o example-project-website/generated/ -v
 
 #
 # single file example
 #
 ihtml static-html-bundles/html5up-stellar/generic.html \
       example-file-whitespace/white-space.ccs \
-      -o example-file-whitespace/generated.html
+      -o example-file-whitespace/generated.html -v
 diff -w static-html-bundles/html5up-stellar/generic.html \
         example-file-whitespace/generated.html \
         > example-file-whitespace/report.txt
@@ -27,7 +27,7 @@ diff -w static-html-bundles/html5up-stellar/generic.html \
 #
 # inheritance analysis example
 #
-ihtml -e example-file-inheritance/ccs/hierarchy.ccs \
+ihtml -e example-file-inheritance/ccs/hierarchy.ccs -v \
       > example-file-inheritance/report.txt
 
 #
@@ -35,7 +35,7 @@ ihtml -e example-file-inheritance/ccs/hierarchy.ccs \
 #
 ihtml static-html-bundles/html5up-stellar/generic.html \
       example-file-class/class.ccs \
-      -o example-file-class/generated.html
+      -o example-file-class/generated.html -v
 diff -w static-html-bundles/html5up-stellar/generic.html \
      example-file-class/generated.html \
      > example-file-class/report.txt
