@@ -6,6 +6,10 @@
     content: var(--content) " with addition";
 }
 
+a[href] {
+    content: var(--content) " (" attr(href) ")";
+}
+
 #main {
     display: "<main>" var(--content) "</main>";
 }
