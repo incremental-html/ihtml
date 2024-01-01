@@ -22,4 +22,12 @@ class CcsFunctions
             default => throw new Exception("Variable $variableName not supported."),
         };
     }
+
+    public static function attr(string $attributeName, array $context): string
+    {
+        if (!$context['element']->hasAttribute($attributeName)) {
+            throw new Exception("Attribute $attributeName not found.");
+        }
+        return $context['element']->getAttribute($attributeName);
+    }
 }
