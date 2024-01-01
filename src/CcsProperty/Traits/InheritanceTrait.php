@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty\Traits;
 
-use DOMDocument;
 use DOMElement;
+use iHTML\DOM\DOMDocument;
 use Symfony\Component\DomCrawler\Crawler;
 
 trait InheritanceTrait

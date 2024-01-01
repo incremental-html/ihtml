@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace iHTML\CcsProperty;
 
 use Closure;
-use DOMDocument;
 use Exception;
+use iHTML\DOM\DOMDocument;
 use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\CSSString;
 use Symfony\Component\DomCrawler\Crawler;

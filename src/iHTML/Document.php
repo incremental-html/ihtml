@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace iHTML\iHTML;
 
-use DOMDocument;
 use DOMElement;
 use Exception;
 use iHTML\CcsProperty\Property;
+use iHTML\DOM\DOMDocument;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
@@ -26,13 +26,13 @@ class Document
      */
     public function __construct(FileRegularExistent $htmlFile)
     {
-        $this->parser = new HTML5();
-        $this->domDocument = $this->parser->load(
-            $htmlFile,
-            [
-                HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true,
-            ],
-        );
+        $this->parser = new HTML5([
+            'target_document' => new DOMDocument(),
+            HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true,
+        ]);
+        $parsed = $this->parser->load($htmlFile);
+        /** @var DOMDocument $parsed */
+        $this->domDocument = $parsed;
         $this->ccsLinks($htmlFile);
         $this->ccsNodes($htmlFile);
         $this->ccsAttributes($htmlFile);

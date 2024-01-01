@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty\Traits;
 
-use DOMDocument;
 use DOMDocumentFragment;
 use DOMElement;
+use iHTML\DOM\DOMDocument;
 use Masterminds\HTML5;
 
 trait ContentTrait

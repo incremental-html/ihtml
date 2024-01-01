@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use DOMDocument;
 use DOMElement;
 use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
+use iHTML\DOM\DOMDocument;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */

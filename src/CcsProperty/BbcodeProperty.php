@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use DOMDocument;
 use iHTML\CcsProperty\Traits\ContentTrait;
+use iHTML\DOM\DOMDocument;
 use JBBCode\DefaultCodeDefinitionSet;
 use JBBCode\Parser;
 use Symfony\Component\DomCrawler\Crawler;
