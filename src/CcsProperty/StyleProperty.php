@@ -6,6 +6,7 @@ namespace iHTML\CcsProperty;
 use Exception;
 use iHTML\DOM\DOMDocument;
 use iHTML\DOM\DOMElement;
+use iHTML\iHTML\DocumentQuery;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -21,7 +22,7 @@ class StyleProperty extends Property
         // 'hidden' => self::HIDDEN,
     ];
 
-    public static function apply(Crawler $list, array $params): void
+    public static function apply(Crawler $list, array $params, DocumentQuery $context): void
     {
         $styles = self::declarationParamsToMap($params);
         // TODO: Implement apply() method.

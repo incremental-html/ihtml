@@ -31,7 +31,8 @@ readonly class Ccs
                 $ccs->applyTo($document);
             })
             ->onRule(function (array $selectors, array $declarations) use ($document) {
-                $query = $document(implode(',', $selectors));
+                $selector = implode(',', $selectors);
+                $query = $document($selector, $this->root);
                 if (!iterator_count($query)) {
                     return;
                 }

@@ -8,6 +8,7 @@ use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
 use iHTML\DOM\DOMDocument;
 use iHTML\DOM\DOMElement;
+use iHTML\iHTML\DocumentQuery;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -38,9 +39,10 @@ class WhiteSpaceProperty extends Property
     ];
 
     /**
+     * @param DocumentQuery $context
      * @throws Exception
      */
-    public static function apply(Crawler $list, array $params): void
+    public static function apply(Crawler $list, array $params, DocumentQuery $context): void
     {
         /** @var DOMElement[] $list */
         if (count($params) > 1) {

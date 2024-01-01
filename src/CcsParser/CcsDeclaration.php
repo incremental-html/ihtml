@@ -31,9 +31,9 @@ class CcsDeclaration
         $this->values = array_map(
             fn($value) => match (true) {
                 $value instanceof CSS\Value\URL =>
-                new CSS\Value\CSSString(
-                    (new FileRegularExistent($value->getURL()->getString(), $root))
-                        ->contents(),
+                new CSS\Value\CSSFunction(
+                    'url',
+                    [$value->getURL()->getString()]
                 ),
                 default => $value,
             },

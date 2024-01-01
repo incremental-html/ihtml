@@ -8,6 +8,7 @@ use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
 use iHTML\DOM\DOMDocument;
 use iHTML\DOM\DOMElement;
+use iHTML\iHTML\DocumentQuery;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -34,7 +35,7 @@ class TextTransformProperty extends Property
         self::CAPITALIZE => 'ucwords',
     ];
 
-    public static function apply(Crawler $list, array $params): void
+    public static function apply(Crawler $list, array $params, DocumentQuery $context): void
     {
         if (count($params) > 1) {
             throw new Exception('Bad parameters count: ' . json_encode($params));

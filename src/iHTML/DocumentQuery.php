@@ -5,6 +5,7 @@ namespace iHTML\iHTML;
 
 use Exception;
 use iHTML\CcsProperty\Property;
+use iHTML\Filesystem\FileDirectoryExistent;
 use IteratorAggregate;
 use Symfony\Component\DomCrawler\Crawler;
 use function Symfony\Component\String\u;
@@ -13,6 +14,7 @@ readonly class DocumentQuery implements IteratorAggregate
 {
     public function __construct(
         private Document $document,
+        private FileDirectoryExistent $workingDir,
         private Crawler $query,
     )
     {
@@ -22,7 +24,7 @@ readonly class DocumentQuery implements IteratorAggregate
     {
         $modifierClass = $this->getPropertyClass($method);
         /** @var Property $modifierClass */
-        $modifierClass::apply($this->query, $arguments);
+        $modifierClass::apply($this->query, $arguments, $this);
         $this->document->appendRender($modifierClass);
     }
 
@@ -39,5 +41,10 @@ readonly class DocumentQuery implements IteratorAggregate
     public function getIterator(): Crawler
     {
         return $this->query;
+    }
+
+    public function getWorkingDir(): FileDirectoryExistent
+    {
+        return $this->workingDir;
     }
 }

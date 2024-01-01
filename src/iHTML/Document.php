@@ -16,6 +16,7 @@ use Symfony\Component\DomCrawler\Crawler;
 class Document
 {
     private DOMDocument $domDocument;
+    private FileDirectoryExistent $workingDir;
     private array $renders = [];
 
     /**
@@ -26,6 +27,7 @@ class Document
     {
         $parsed = DOMDocument::fromFile($htmlFile);
         $this->domDocument = $parsed;
+        $this->workingDir = $htmlFile->getPath();
         $this->ccsLinks($htmlFile);
         $this->ccsNodes($htmlFile);
         $this->ccsAttributes($htmlFile);
@@ -64,6 +66,7 @@ class Document
         }
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     private function ccsAttributes(FileRegularExistent $htmlFile): void
     {
         /** @noinspection PhpStatementHasEmptyBodyInspection */
@@ -77,10 +80,10 @@ class Document
     /**
      * Implements $document('SELECTOR')
      */
-    public function __invoke($selector): DocumentQuery
+    public function __invoke($selector, ?FileDirectoryExistent $workingDir = null): DocumentQuery
     {
         $query = (new Crawler($this->domDocument))->filter($selector);
-        return new DocumentQuery($this, $query);
+        return new DocumentQuery($this, $workingDir ?? $this->workingDir, $query);
     }
 
     /**
@@ -125,8 +128,6 @@ class Document
         print $this->domDocument->asString();
         return $this;
     }
-
-    /** @noinspection PhpUnusedParameterInspection */
 
     public function get(): string
     {

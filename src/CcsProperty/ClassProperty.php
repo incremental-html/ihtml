@@ -6,6 +6,7 @@ namespace iHTML\CcsProperty;
 use Exception;
 use iHTML\DOM\DOMDocument;
 use iHTML\DOM\DOMElement;
+use iHTML\iHTML\DocumentQuery;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -21,9 +22,10 @@ class ClassProperty extends Property
     ];
 
     /**
+     * @param DocumentQuery $context
      * @throws Exception
      */
-    public static function apply(Crawler $list, array $params): void
+    public static function apply(Crawler $list, array $params, DocumentQuery $context): void
     {
         $classesVisibility = self::declarationParamsToMap($params);
         foreach ($list as $element) {

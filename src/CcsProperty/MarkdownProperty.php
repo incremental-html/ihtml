@@ -6,6 +6,7 @@ namespace iHTML\CcsProperty;
 use iHTML\CcsProperty\Traits\ContentTrait;
 use iHTML\DOM\DOMDocument;
 use iHTML\DOM\DOMElement;
+use iHTML\iHTML\DocumentQuery;
 use Parsedown;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -15,12 +16,12 @@ class MarkdownProperty extends Property
 {
     use ContentTrait;
 
-    public static function apply(Crawler $list, array $params): void
+    public static function apply(Crawler $list, array $params, DocumentQuery $context): void
     {
         foreach ($list as $element) {
             /** @var DOMElement $element */
             $parser = new Parsedown();
-            $content = static::solveParams($params, $element);
+            $content = static::solveParams($params, $element, $context);
             $content = $parser->text($content);
             $element->empty();
             if (!$content) {

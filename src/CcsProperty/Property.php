@@ -5,6 +5,7 @@ namespace iHTML\CcsProperty;
 
 use Exception;
 use iHTML\DOM\DOMDocument;
+use iHTML\iHTML\DocumentQuery;
 use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\CSSString;
 use Symfony\Component\DomCrawler\Crawler;
@@ -19,7 +20,7 @@ abstract class Property
     {
     }
 
-    abstract public static function apply(Crawler $list, array $params): void;
+    abstract public static function apply(Crawler $list, array $params, DocumentQuery $context): void;
 
     abstract public static function render(DOMDocument $domDocument): void;
 
