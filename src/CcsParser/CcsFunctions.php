@@ -4,21 +4,15 @@ declare(strict_types=1);
 namespace iHTML\CcsParser;
 
 use Exception;
-use Sabberworm\CSS\Value\CSSString;
 
 class CcsFunctions
 {
-    public static function var(string $variableName, array $context): CSSString
+    public static function var(string $variableName, array $context): string
     {
-        $variableValue = match ($variableName) {
-            '--content' =>
-            new CSSString(collect($context['element']->childNodes)
-                ->map(fn($n) => $context['element']->ownerDocument->saveHTML($n))
-                ->join('')),
-            '--display' =>
-            new CSSString($context['element']->ownerDocument->saveHTML($context['element'])),
+        return match ($variableName) {
+            '--content' => $context['element']->content(),
+            '--display' => $context['element']->display(),
             default => throw new Exception("Variable $variableName not supported."),
         };
-        return $variableValue;
     }
 }
