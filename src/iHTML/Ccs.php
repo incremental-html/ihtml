@@ -30,21 +30,6 @@ readonly class Ccs
         return new self($code, $root);
     }
 
-    public function getInheritance(): array
-    {
-        $inheritance = [];
-        $parser = new CcsParser();
-        $parser
-            ->onImport(function (string $file) use (&$inheritance) {
-                $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
-                $imports = $ccs->getInheritance();
-                $inheritance[$file] = array_merge($inheritance[$file] ?? [], $imports);
-            })
-        ;
-        $parser->parse($this->code, $this->root);
-        return $inheritance;
-    }
-
     public function applyTo(Document $document): self
     {
         $parser = new CcsParser();
@@ -67,28 +52,26 @@ readonly class Ccs
         return $this;
     }
 
+    public function getInheritance(): array
+    {
+        $inheritance = [];
+        $parser = new CcsParser();
+        $parser
+            ->onImport(function (string $file) use (&$inheritance) {
+                $ccs = Ccs::fromFile(new FileRegularExistent($file, $this->root));
+                $imports = $ccs->getInheritance();
+                $inheritance[$file] = array_merge($inheritance[$file] ?? [], $imports);
+            })
+        ;
+        $parser->parse($this->code, $this->root);
+        return $inheritance;
+    }
+
     private static function applyDeclaration(
         DocumentQuery $query,
         CcsDeclaration $declaration,
     ): void
     {
-        $method = self::getMethod($declaration);
-        $arguments = self::getValues($declaration);
-        $query->$method(...$arguments);
-    }
-
-    private static function getMethod(CcsDeclaration $declaration): string
-    {
-        return (string)u($declaration->property)->camel();
-    }
-
-    private static function getValues(CcsDeclaration $declaration): array
-    {
-        $propertyClass = '\\iHTML\\CcsProperty\\' . u($declaration->property)->camel()->title() . 'Property';
-        if (!class_exists($propertyClass)) {
-            throw new Exception("Class `$propertyClass` not implemented for property `$declaration->property`.");
-        }
-        /** @var Property $propertyClass */
-        return $propertyClass::convertPropertyValues($declaration->values);
+        $declaration->executeOn($query);
     }
 }
