@@ -6,6 +6,7 @@ namespace iHTML\CcsProperty;
 use Closure;
 use Exception;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\CSSString;
 use Symfony\Component\DomCrawler\Crawler;
@@ -41,10 +42,8 @@ abstract class Property
     public static function getVar($varName): Closure
     {
         return match ($varName) {
-            '--content' => fn($element) => collect($element->childNodes)
-                ->map(fn($n) => $element->ownerDocument->saveHTML($n))
-                ->join(''),
-            '--display' => fn($element) => $element->ownerDocument->saveHTML($element),
+            '--content' => fn(DOMElement $element) => $element->content(),
+            '--display' => fn(DOMElement $element) => $element->display(),
             default => throw new Exception("Variable $varName not supported."),
         };
     }
