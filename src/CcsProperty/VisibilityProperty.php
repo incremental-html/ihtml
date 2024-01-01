@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use DOMElement;
+use iHTML\DOM\DOMElement;
 use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
 use iHTML\DOM\DOMDocument;
