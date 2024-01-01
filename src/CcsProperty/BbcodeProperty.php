@@ -5,6 +5,7 @@ namespace iHTML\CcsProperty;
 
 use iHTML\CcsProperty\Traits\ContentTrait;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use JBBCode\DefaultCodeDefinitionSet;
 use JBBCode\Parser;
 use Symfony\Component\DomCrawler\Crawler;
@@ -20,16 +21,14 @@ class BbcodeProperty extends Property
         $parser = new Parser();
         $parser->addCodeDefinitionSet(new DefaultCodeDefinitionSet());
         foreach ($list as $element) {
+            /** @var DOMElement $element */
             $content = static::solveParams($params, $element);
             $content = $parser->parse($content)->getAsHTML();
-            while ($element->hasChildNodes()) {
-                $element->removeChild($element->firstChild);
-            }
+            $element->empty();
             if (!$content) {
                 continue;
             }
-            $html = self::domFragment($content, $element->ownerDocument);
-            $element->appendChild($html);
+            $element->appendContent($content);
         }
     }
 

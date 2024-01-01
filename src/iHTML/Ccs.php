@@ -17,11 +17,6 @@ readonly class Ccs
     {
     }
 
-    public static function fromFile(FileRegularExistent $file): Ccs
-    {
-        return new self($file->contents(), $file->getPath());
-    }
-
     public static function fromString(string $code, FileDirectoryExistent $root): self
     {
         return new self($code, $root);
@@ -49,6 +44,19 @@ readonly class Ccs
         return $this;
     }
 
+    public static function fromFile(FileRegularExistent $file): Ccs
+    {
+        return new self($file->contents(), $file->getPath());
+    }
+
+    private static function applyDeclaration(
+        DocumentQuery $query,
+        CcsDeclaration $declaration,
+    ): void
+    {
+        $declaration->executeOn($query);
+    }
+
     public function getInheritance(): array
     {
         $inheritance = [];
@@ -62,13 +70,5 @@ readonly class Ccs
         ;
         $parser->parse($this->code, $this->root);
         return $inheritance;
-    }
-
-    private static function applyDeclaration(
-        DocumentQuery $query,
-        CcsDeclaration $declaration,
-    ): void
-    {
-        $declaration->executeOn($query);
     }
 }

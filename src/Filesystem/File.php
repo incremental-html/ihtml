@@ -32,9 +32,24 @@ readonly abstract class File
         $this->info = new SplFileInfo($this->getAbsolute());
     }
 
+    public function getAbsolute(): string
+    {
+        return Path::isAbsolute($this->path) ?
+            $this->path :
+            Path::makeAbsolute($this->path, $this->workingDir->getAbsolute());
+    }
+
     public function __toString(): string
     {
         return $this->getAbsolute();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getPath(): FileDirectory
+    {
+        return new FileDirectory($this->info->getPath());
     }
 
     /**
@@ -45,20 +60,5 @@ readonly abstract class File
         if (!file_exists($this->getAbsolute())) {
             throw new Exception("$this does not exist.");
         }
-    }
-
-    public function getAbsolute(): string
-    {
-        return Path::isAbsolute($this->path) ?
-            $this->path :
-            Path::makeAbsolute($this->path, $this->workingDir->getAbsolute());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getPath(): FileDirectory
-    {
-        return new FileDirectory($this->info->getPath());
     }
 }

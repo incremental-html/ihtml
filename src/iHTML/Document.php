@@ -3,20 +3,18 @@ declare(strict_types=1);
 
 namespace iHTML\iHTML;
 
-use iHTML\DOM\DOMElement;
 use Exception;
 use iHTML\CcsProperty\Property;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use iHTML\Filesystem\FileDirectoryExistent;
 use iHTML\Filesystem\FileRegular;
 use iHTML\Filesystem\FileRegularExistent;
-use Masterminds\HTML5;
 use Sabberworm\CSS\Parsing\SourceException;
 use Symfony\Component\DomCrawler\Crawler;
 
 class Document
 {
-    private HTML5 $parser;
     private DOMDocument $domDocument;
     private array $renders = [];
 
@@ -26,75 +24,11 @@ class Document
      */
     public function __construct(FileRegularExistent $htmlFile)
     {
-        $this->parser = new HTML5([
-            'target_document' => new DOMDocument(),
-            HTML5\Parser\DOMTreeBuilder::OPT_DISABLE_HTML_NS => true,
-        ]);
-        $parsed = $this->parser->load($htmlFile);
-        /** @var DOMDocument $parsed */
+        $parsed = DOMDocument::fromFile($htmlFile);
         $this->domDocument = $parsed;
         $this->ccsLinks($htmlFile);
         $this->ccsNodes($htmlFile);
         $this->ccsAttributes($htmlFile);
-    }
-
-    /**
-     * Implements $document('SELECTOR')
-     */
-    public function __invoke($selector): DocumentQuery
-    {
-        $query = (new Crawler($this->domDocument))->filter($selector);
-        return new DocumentQuery($this, $query);
-    }
-
-    // final rendering
-    public function render(): void
-    {
-        foreach ($this->renders as $renderClass => $ignored) {
-            /** @var Property $renderClass */
-            $renderClass::render($this->domDocument);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function save(
-        string $output,
-        FileDirectoryExistent $outputDir,
-        string $index = 'index.html',
-    ): Document
-    {
-        $file = self::fileFromResource($output, $index, $outputDir);
-        $file->getPath()->create();
-        $this->render();
-        $this->parser->save($this->domDocument, $file);
-        return $this;
-    }
-
-    public function print(): Document
-    {
-        $this->render();
-        print $this->parser->saveHTML($this->domDocument);
-        return $this;
-    }
-
-    public function get(): string
-    {
-        $this->render();
-        return $this->parser->saveHTML($this->domDocument);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private static function fileFromResource(string $output, string $index, FileDirectoryExistent $outputDir): FileRegular
-    {
-        $file = $output ?: './';
-        if (str_ends_with($file, '/')) {
-            $file .= $index;
-        }
-        return new FileRegular($file, $outputDir);
     }
 
     /**
@@ -113,6 +47,8 @@ class Document
         }
     }
 
+    // final rendering
+
     /**
      * @param FileRegularExistent $htmlFile
      * @return void
@@ -128,7 +64,6 @@ class Document
         }
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
     private function ccsAttributes(FileRegularExistent $htmlFile): void
     {
         /** @noinspection PhpStatementHasEmptyBodyInspection */
@@ -139,8 +74,69 @@ class Document
         }
     }
 
+    /**
+     * Implements $document('SELECTOR')
+     */
+    public function __invoke($selector): DocumentQuery
+    {
+        $query = (new Crawler($this->domDocument))->filter($selector);
+        return new DocumentQuery($this, $query);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function save(
+        string $output,
+        FileDirectoryExistent $outputDir,
+        string $index = 'index.html',
+    ): Document
+    {
+        $file = self::fileFromResource($output, $index, $outputDir);
+        $file->getPath()->create();
+        $this->render();
+        $this->domDocument->asFile($file);
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function fileFromResource(string $output, string $index, FileDirectoryExistent $outputDir): FileRegular
+    {
+        $file = $output ?: './';
+        if (str_ends_with($file, '/')) {
+            $file .= $index;
+        }
+        return new FileRegular($file, $outputDir);
+    }
+
+    public function render(): void
+    {
+        foreach ($this->renders as $renderClass => $ignored) {
+            /** @var Property $renderClass */
+            $renderClass::render($this->domDocument);
+        }
+    }
+
+    public function print(): Document
+    {
+        $this->render();
+        print $this->domDocument->asString();
+        return $this;
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+
+    public function get(): string
+    {
+        $this->render();
+        return $this->domDocument->asString();
+    }
+
     public function appendRender(string $modifierClass): void
     {
         $this->renders[$modifierClass] = true;
     }
+
 }

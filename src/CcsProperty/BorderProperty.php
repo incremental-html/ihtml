@@ -5,6 +5,7 @@ namespace iHTML\CcsProperty;
 
 use iHTML\CcsProperty\Traits\ContentTrait;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -16,9 +17,10 @@ class BorderProperty extends Property
     public static function apply(Crawler $list, array $params): void
     {
         foreach ($list as $element) {
+            /** @var DOMElement $element */
             $content = static::solveParams($params, $element);
-            $html = self::domFragment($content, $element->ownerDocument);
-            $element->parentNode->replaceChild($html, $element);
+            $fragment = $element->document()->fragmentFromString($content);
+            $element->parentNode->replaceChild($fragment, $element);
         }
     }
 

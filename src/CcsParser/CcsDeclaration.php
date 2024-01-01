@@ -11,6 +11,8 @@ use iHTML\iHTML\DocumentQuery;
 use Sabberworm\CSS;
 use function Symfony\Component\String\u;
 
+// use Sabberworm\CSS\Value\CSSFunction;
+
 class CcsDeclaration
 {
     public string $property;
@@ -30,6 +32,7 @@ class CcsDeclaration
          */
         $this->values = array_map(
             fn($value) => match (true) {
+                // $value instanceof CSSFunction => self::ccsFunction($value, $root),
                 $value instanceof CSS\Value\URL =>
                 new CSS\Value\CSSString(
                     (new FileRegularExistent($value->getURL()->getString(), $root))
@@ -63,4 +66,11 @@ class CcsDeclaration
         /** @var Property $propertyClass */
         return $propertyClass::convertPropertyValues($this->values);
     }
+    //
+    // private static function ccsFunction(CSSFunction $value, FileDirectoryExistent $root): string
+    // {
+    //     return CcsFunctions::{$value->getName()}(...$value->getArguments(), context: [
+    //         'root' => $root,
+    //     ]);
+    // }
 }

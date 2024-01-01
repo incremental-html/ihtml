@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use iHTML\DOM\DOMElement;
 use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -54,7 +54,6 @@ class VisibilityProperty extends Property
             $attribute = $element->getAttribute($attributeName);
             $element->removeAttribute($attributeName);
             if ($attribute == self::HIDDEN) {
-                // $element->parentNode->removeChild($element);
                 $element->remove();
             }
         }

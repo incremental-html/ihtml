@@ -26,11 +26,6 @@ readonly class DocumentQuery implements IteratorAggregate
         $this->document->appendRender($modifierClass);
     }
 
-    public function getIterator(): Crawler
-    {
-        return $this->query;
-    }
-
     private function getPropertyClass(string $method): string
     {
         // modifiersMap maps modifiers method with classes, in form of: [ method => class, ... ]
@@ -39,5 +34,10 @@ readonly class DocumentQuery implements IteratorAggregate
             throw new Exception("Class `$modifierClass` not implemented for method `$method`.");
         }
         return $modifierClass;
+    }
+
+    public function getIterator(): Crawler
+    {
+        return $this->query;
     }
 }

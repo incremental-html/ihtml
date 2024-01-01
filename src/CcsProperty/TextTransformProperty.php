@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use iHTML\DOM\DOMElement;
 use DOMText;
 use Exception;
 use iHTML\CcsProperty\Traits\InheritanceTrait;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -63,6 +63,7 @@ class TextTransformProperty extends Property
             ->filter("[$attributeName]")
         ;
         foreach ($list as $element) {
+            /** @var DOMElement $element */
             self::applyToElement($element, $attributeName);
         }
     }

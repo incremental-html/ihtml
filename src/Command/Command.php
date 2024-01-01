@@ -152,6 +152,27 @@ class Command
     }
 
     /**
+     * @throws SourceException
+     * @throws Exception
+     */
+    private static function printInheritance(string $ccsFile): void
+    {
+        $prettyTree = function (string $file, array $includes, int $level = 0) use (&$prettyTree) {
+            return str_repeat(' ', $level * 2) . $file . "\n" .
+                collect($includes)
+                    ->map(fn($include, $file) => $prettyTree($file, $include, $level + 1))
+                    ->join('')
+            ;
+        };
+
+        $ccsFile = new FileRegularExistent($ccsFile, self::$workingDir);
+        $ccs = Ccs::fromFile($ccsFile);
+        $inheritance = $ccs->getInheritance();
+        print 'Hierarchy:' . "\n\n";
+        print $prettyTree((string)$ccsFile, $inheritance);
+    }
+
+    /**
      * @throws Exception
      */
     private static function compileFile(
@@ -217,26 +238,5 @@ class Command
             $document->print();
         }
         print "Ccs code\n$ccsCode\napplied successfully\n\n";
-    }
-
-    /**
-     * @throws SourceException
-     * @throws Exception
-     */
-    private static function printInheritance(string $ccsFile): void
-    {
-        $prettyTree = function (string $file, array $includes, int $level = 0) use (&$prettyTree) {
-            return str_repeat(' ', $level * 2) . $file . "\n" .
-                collect($includes)
-                    ->map(fn($include, $file) => $prettyTree($file, $include, $level + 1))
-                    ->join('')
-            ;
-        };
-
-        $ccsFile = new FileRegularExistent($ccsFile, self::$workingDir);
-        $ccs = Ccs::fromFile($ccsFile);
-        $inheritance = $ccs->getInheritance();
-        print 'Hierarchy:' . "\n\n";
-        print $prettyTree((string)$ccsFile, $inheritance);
     }
 }

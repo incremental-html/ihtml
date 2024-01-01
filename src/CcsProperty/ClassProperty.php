@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use iHTML\DOM\DOMElement;
 use Exception;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -45,25 +45,6 @@ class ClassProperty extends Property
         }
     }
 
-    public static function render(DOMDocument $domDocument): void
-    {
-    }
-
-    private static function classAttributeToMap(string $classList): array
-    {
-        $classList = (array)preg_split('/\s+/', $classList);
-        $classList = array_filter($classList);
-        $classList = array_flip($classList);
-        return $classList;
-    }
-
-    private static function classMapToAttribute(array $classesMap): string
-    {
-        $classList = array_keys($classesMap);
-        $classList = implode(' ', $classList);
-        return $classList;
-    }
-
     public static function declarationParamsToMap(array $params): array
     {
         if (count($params) % 2 > 0) {
@@ -81,5 +62,24 @@ class ClassProperty extends Property
             $classesVisibility[$class] = $visibility;
         }
         return $classesVisibility;
+    }
+
+    private static function classAttributeToMap(string $classList): array
+    {
+        $classList = (array)preg_split('/\s+/', $classList);
+        $classList = array_filter($classList);
+        $classList = array_flip($classList);
+        return $classList;
+    }
+
+    private static function classMapToAttribute(array $classesMap): string
+    {
+        $classList = array_keys($classesMap);
+        $classList = implode(' ', $classList);
+        return $classList;
+    }
+
+    public static function render(DOMDocument $domDocument): void
+    {
     }
 }

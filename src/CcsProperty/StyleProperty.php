@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace iHTML\CcsProperty;
 
-use iHTML\DOM\DOMElement;
 use Exception;
 use iHTML\DOM\DOMDocument;
+use iHTML\DOM\DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 
 /** @noinspection PhpUnused */
@@ -45,9 +45,17 @@ class StyleProperty extends Property
         }
     }
 
-    public static function render(DOMDocument $domDocument): void
+    private static function declarationParamsToMap(array $params): array
     {
-        // TODO: Implement render() method.
+        if (count($params) % 2 > 0) {
+            throw new Exception('Wrong `style` property values count');
+        }
+        $params = array_chunk($params, 2);
+        $styles = [];
+        foreach ($params as [$styleProperty, $styleValue]) {
+            $styles[$styleProperty] = $styleValue;
+        }
+        return $styles;
     }
 
     private static function parseStyleAttribute($style): array
@@ -76,17 +84,9 @@ class StyleProperty extends Property
         return $style;
     }
 
-    private static function declarationParamsToMap(array $params): array
+    public static function render(DOMDocument $domDocument): void
     {
-        if (count($params) % 2 > 0) {
-            throw new Exception('Wrong `style` property values count');
-        }
-        $params = array_chunk($params, 2);
-        $styles = [];
-        foreach ($params as [$styleProperty, $styleValue]) {
-            $styles[$styleProperty] = $styleValue;
-        }
-        return $styles;
+        // TODO: Implement render() method.
     }
 
     // public const CCS = [

@@ -6,10 +6,10 @@ const SELECTOR_NAME_REGEX = '-?[_a-zA-Z]+[_a-zA-Z0-9-]*';
 function selector_weight(string $selector, bool $important = false): string
 {
     $important = $important ? 1 : 0; // !important
-    $style = 0; // STYLE (e.g. style="rules")
-    $ids = 0; // #LABEL (e.g. #elementId)
-    $classes = 0; // .LABEL, [LABEL] and :LABEL (e.g. .class , [attr="value"])
-    $elements = 0; // LABEL (e.g. H1)
+    $style = 0;                      // STYLE (e.g. style="rules")
+    $ids = 0;                        // #LABEL (e.g. #elementId)
+    $classes = 0;                    // .LABEL, [LABEL] and :LABEL (e.g. .class , [attr="value"])
+    $elements = 0;                   // LABEL (e.g. H1)
 
     // removing :not selector (useless)
     $selector = str_replace(':not(', '', $selector);
@@ -75,9 +75,9 @@ function selectors_weight(string ...$selectors): string
 function getMimetype($file): false|string
 {
     return [
-        'css' => 'text/css',
-        'js' => 'text/javascript',
-    ][pathinfo($file, PATHINFO_EXTENSION)]
+               'css' => 'text/css',
+               'js' => 'text/javascript',
+           ][pathinfo($file, PATHINFO_EXTENSION)]
         ?? mime_content_type($file);
 }
 

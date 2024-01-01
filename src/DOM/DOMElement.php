@@ -14,6 +14,18 @@ class DOMElement extends PHPDOMElement
         }
     }
 
+    public function appendContent(string $content): void
+    {
+        $fragment = $this->document()->fragmentFromString($content);
+        $this->appendChild($fragment);
+    }
+
+    public function document(): DOMDocument
+    {
+        /** @var DOMDocument {$this->ownerDocument} */
+        return $this->ownerDocument;
+    }
+
     public function content(): string
     {
         return collect($this->childNodes)
@@ -25,11 +37,5 @@ class DOMElement extends PHPDOMElement
     public function display(): string
     {
         return $this->ownerDocument->saveHTML($this);
-    }
-
-    public function document(): DOMDocument
-    {
-        /** @var DOMDocument {$this->ownerDocument} */
-        return $this->ownerDocument;
     }
 }
