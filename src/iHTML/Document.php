@@ -105,9 +105,13 @@ class Document
     /**
      * @throws Exception
      */
-    private static function fileFromResource(string $output, string $index, FileDirectoryExistent $outputDir): FileRegular
+    private static function fileFromResource(string $resource, string $index, FileDirectoryExistent $outputDir): FileRegular
     {
-        $file = $output ?: './';
+        $file = $resource;
+        if (str_starts_with($file, '/')) {
+            $file = substr($file, 1);
+        }
+        $file = $file ?: './';
         if (str_ends_with($file, '/')) {
             $file .= $index;
         }

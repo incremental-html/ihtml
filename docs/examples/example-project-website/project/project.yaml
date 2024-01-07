@@ -1,13 +1,22 @@
+static: ../../static-html-bundles/html5up-stellar
+index: index.html
 resources:
-  '':
-  - ../../static-html-bundles/html5up-stellar/index.html
-  - index.ccs
-  posts/post-1/:
-  - ../../static-html-bundles/html5up-stellar/generic.html
-  - posts/post-1.page.ccs
-  posts/post-2/:
-  - ../../static-html-bundles/html5up-stellar/generic.html
-  - posts/post-2.page.ccs
-  posts/post-3/:
-  - ../../static-html-bundles/html5up-stellar/generic.html
-  - posts/post-3.page.ccs
+  '/':
+    - ../../static-html-bundles/html5up-stellar/index.html
+    - index.ccs
+  /posts/post-1/:
+    - ../../static-html-bundles/html5up-stellar/generic.html
+    - posts/post-1.page.ccs
+  /posts/post-2/:
+    - ../../static-html-bundles/html5up-stellar/generic.html
+    - posts/post-2.page.ccs
+  /posts/post-3/:
+    - ../../static-html-bundles/html5up-stellar/generic.html
+    - posts/post-3.page.ccs
+errors:
+  404:
+    - ../../static-html-bundles/html5up-stellar/index.html
+    - errors/404.ccs
+  500:
+    - ../../static-html-bundles/html5up-stellar/index.html
+    - errors/500.ccs

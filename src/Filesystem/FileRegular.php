@@ -21,11 +21,19 @@ readonly class FileRegular extends File
         }
     }
 
-    public function contents(): ?string
+    public function getContents(): ?string
     {
         $contents = file_get_contents($this->getAbsolute());
         return $contents === false ?
             null :
             $contents;
+    }
+
+    public function putContents(string $contents): void
+    {
+        $return = file_put_contents($this->getAbsolute(), $contents);
+        if ($return === false) {
+            throw new Exception("Failed to write to file {$this->getAbsolute()} (content length: " . strlen($contents) . ')');
+        }
     }
 }

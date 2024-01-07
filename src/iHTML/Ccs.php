@@ -47,7 +47,7 @@ readonly class Ccs
 
     public static function fromFile(FileRegularExistent $file): Ccs
     {
-        return new self($file->contents(), $file->getPath());
+        return new self($file->getContents(), $file->getPath());
     }
 
     private static function applyDeclaration(

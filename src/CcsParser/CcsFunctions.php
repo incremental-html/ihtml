@@ -11,7 +11,7 @@ class CcsFunctions
     public static function url(string $urlPath, array $context): string
     {
         $file = new FileRegularExistent($urlPath, $context['root']);
-        return $file->contents();
+        return $file->getContents();
     }
 
     public static function var(string $variableName, array $context): string
