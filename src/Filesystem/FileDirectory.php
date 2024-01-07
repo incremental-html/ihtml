@@ -18,13 +18,14 @@ readonly class FileDirectory extends File
     /**
      * @throws Exception
      */
-    public function create(): void
+    public function create(): FileDirectoryExistent
     {
         if (file_exists($this->getAbsolute())) {
-            return;
+            return new FileDirectoryExistent($this->path, $this->workingDir);
         }
         if (!mkdir($this->getAbsolute(), 0777, true)) {
             throw new Exception("Error creating $this directory.");
         }
+        return new FileDirectoryExistent($this->path, $this->workingDir);
     }
 }
