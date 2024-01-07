@@ -47,10 +47,6 @@ and then:
 TODO
 
 ## TODO
-* add to project
-  * index filename
-  * 404 resource
-  * static directory
 * add property `attribute`:
   * `attribute: "title" "some text";` to change content
   * `attribute: "title" "";` to empty
