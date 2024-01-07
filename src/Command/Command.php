@@ -30,7 +30,6 @@ class Command
             ['s', 'server', GetOpt::OPTIONAL_ARGUMENT, '(Server mode) port to launch server on'],
             ['t', 'static', GetOpt::REQUIRED_ARGUMENT, '(Server mode) Directory of static file', getcwd()],
             ['d', 'dir', GetOpt::REQUIRED_ARGUMENT, 'Working dir of code snippets', getcwd()],
-            ['i', 'index', GetOpt::REQUIRED_ARGUMENT, 'Default index file name for `/`'],
             ['e', 'inheritance', GetOpt::NO_ARGUMENT, 'Print inheritance'],
             ['v', 'verbose', GetOpt::NO_ARGUMENT, 'Make verbose'],
             ['h', 'help', GetOpt::NO_ARGUMENT, 'This help'],
@@ -56,7 +55,6 @@ class Command
                     self::compileProject(
                         $options['p'] != 1 ? $options['p'] : self::$workingDir,
                         $options['o'] ?? null,
-                        $options['i'] ?? null,
                     );
                     break;
                 case isset($options['e']):
@@ -141,13 +139,12 @@ class Command
     private static function compileProject(
         string $projectDir,
         string $outputDir,
-        ?string $index,
     ): void
     {
         $projectDir = new FileDirectoryExistent($projectDir, self::$workingDir);
         $outputDir = new FileDirectory($outputDir, self::$workingDir);
         $project = new Project($projectDir);
-        $project->render($outputDir, $index);
+        $project->render($outputDir);
         print "Project\n$projectDir\ncompiled successfully\n\n";
     }
 
