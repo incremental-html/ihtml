@@ -47,16 +47,6 @@ and then:
 TODO
 
 ## TODO
-* ccs functions:
-  * <string> url(<string> file) (done)
-  * <json> json(<string> code)
-  * <json> yaml(<string> code)
-  * <string> json-select(<json> data, <string> path)
-  * <string> json-set(<json> data, <string> path, <mixed> value)
-  * <string> uri-set(<URI> data, <string> path, <mixed> value)
-  * <string> html-set(<dom> data, <string> selector)
-  * <mixed> var(<label> name)
-  * <URI> uri(<string> url)
 * ccs properties:
   * `attribute`:
     * `attribute: "title" "some text";` to change content
@@ -64,11 +54,12 @@ TODO
     * `attribute: "title" none;` to remove the attribute
     * `attribute: "title" visibile/hidden;` to hide (may be shown again)
     * `attribute: "title" "My new content" content;` to concatenate
-  * `ldjson`:
-    * `ldjson: "./title" "My title"` to set path
   * `style`:
     * `style: background-color "black"` to set style
     * `style: background-color none`
+  * srcset
+    * srcset: "size" none
+    * srcset: "size" "image.jpg"
   * border
   * margin
   * padding
@@ -88,10 +79,17 @@ TODO
     * minified, normal, compact
   * `on`
     on: click "execMe();"
-* internal selector navigation supports
-  * add `<style>` support
-  * add `[srcset]` support
-  * add `ld+json` navigation support
+* ccs functions:
+  * <string> url(<string> file) (done)
+  * <json> json(<string> code)
+  * <json> yaml(<string> code)
+  * <string> json-select(<json> data, <string> path)
+  * <string> json-set(<json> data, <string> path, <mixed> value)
+  * <string> uri-set(<URI> data, <string> path, <mixed> value)
+  * <string> html-set(<dom> data, <string> selector)
+  * <string> style-set(<string> content, <string> selector, <string> property, <string> value)
+  * <mixed> var(<label> name)
+  * <URI> uri(<string> url)
 * integration
   * add **SASS/SCSS** example
   * add **PurgeCSS** integration
