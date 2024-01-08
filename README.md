@@ -54,6 +54,7 @@ TODO
   * <string> json-select(<json> data, <string> path)
   * <string> json-set(<json> data, <string> path, <mixed> value)
   * <string> uri-set(<URI> data, <string> path, <mixed> value)
+  * <string> html-set(<dom> data, <string> selector)
   * <mixed> var(<label> name)
   * <URI> uri(<string> url)
 * ccs properties:
