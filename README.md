@@ -55,17 +55,31 @@ TODO
     * `attribute: "title" visibile/hidden;` to hide (may be shown again)
     * `attribute: "title" "My new content" content;` to concatenate
   * `style`:
-    * `style: background-color "black"` to set style
-    * `style: background-color none`
-  * srcset
-    * srcset: "size" none
-    * srcset: "size" "image.jpg"
-  * border
-  * margin
-  * padding
-  * wikitext
-  * code (with highlight_string)
-  * `url` parts support (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
+    * `style`: background-color "black"` to set style
+    * `style`: background-color none`
+  * `srcset`
+    * `srcset`: "size" none
+    * `srcset`: "size" "image.jpg"
+  * `border`
+  * `margin`
+  * `padding`
+  * `wikitext`
+  * `code` (with highlight_string)
+  * css-white-space
+    * minified, normal, compact
+  * js-white-space
+    * minified, normal, compact
+  * `on`
+    * `on: click "execMe();"`
+* ccs functions:
+  * content(): opening tag, closing tag, tag name ("div")
+  * `<string> url(<string> file)` (done)
+  * `<json> json(<string> code)`
+  * `<json> yaml(<string> code)`
+  * `<string> json-select(<json> data, <string> path)`
+  * `<string> json-set(<json> data, <string> path, <mixed> value)`
+  * `<string> uri-set(<URI> data, <string> path, <mixed> value)`
+    * (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
     * link[href],
     * script[src],
     * a[href],
@@ -73,23 +87,10 @@ TODO
     * source[src],
     * video[poster]
     * and other URI
-  * css-white-space
-    * minified, normal, compact
-  * js-white-space
-    * minified, normal, compact
-  * `on`
-    on: click "execMe();"
-* ccs functions:
-  * <string> url(<string> file) (done)
-  * <json> json(<string> code)
-  * <json> yaml(<string> code)
-  * <string> json-select(<json> data, <string> path)
-  * <string> json-set(<json> data, <string> path, <mixed> value)
-  * <string> uri-set(<URI> data, <string> path, <mixed> value)
-  * <string> html-set(<dom> data, <string> selector)
-  * <string> style-set(<string> content, <string> selector, <string> property, <string> value)
-  * <mixed> var(<label> name)
-  * <URI> uri(<string> url)
+  *  `<string> html-set(<dom> data, <string> selector)`
+  * `<string> style-set(<string> content, <string> selector, <string> property, <string> value)`
+  * `<mixed> var(<label> name)`
+  * `<URI> uri(<string> url)`
 * integration
   * add **SASS/SCSS** example
   * add **PurgeCSS** integration
