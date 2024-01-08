@@ -51,8 +51,11 @@ TODO
   * <string> url(<string> file) (done)
   * <json> json(<string> code)
   * <json> yaml(<string> code)
-  * <string> json-path(<json> data, <string> path)
+  * <string> json-select(<json> data, <string> path)
+  * <string> json-set(<json> data, <string> path, <mixed> value)
+  * <string> uri-set(<URI> data, <string> path, <mixed> value)
   * <mixed> var(<label> name)
+  * <URI> uri(<string> url)
 * ccs properties:
   * `attribute`:
     * `attribute: "title" "some text";` to change content
@@ -65,17 +68,12 @@ TODO
   * `style`:
     * `style: background-color "black"` to set style
     * `style: background-color none`
-* functionalities
-  * support for rules: border, margin, padding, wikitext
-  * add javascript on* attributes support
-    * .element { onclick = "execMe();" }
-  * add `content` attribute support
-  * add `code` rule support
-* internal selector navigation supports
-  * add `<style>` support
-  * add `[srcset]` support
-  * add `ld+json` navigation support
-  * add `url` parts support (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
+  * border
+  * margin
+  * padding
+  * wikitext
+  * code
+  * `url` parts support (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
     * link[href],
     * script[src],
     * a[href],
@@ -83,17 +81,19 @@ TODO
     * source[src],
     * video[poster]
     * and other URI
+  * css-white-space
+    * minified, normal, compact
+  * js-white-space
+    * minified, normal, compact
+  * `on`
+    on: click "execMe();"
+* internal selector navigation supports
+  * add `<style>` support
+  * add `[srcset]` support
+  * add `ld+json` navigation support
 * integration
   * add **SASS/SCSS** example
   * add **PurgeCSS** integration
-* refactor
-  * move to a REAL html5 parser (like the Chrome one)
-  * add white-space support for inline CSSs and JSs
-  * add full website example to be used as unit test
-    * add `blog posts` example
-  * add incremental caching (after benchmarks and choice of platform)
-  * add dependency tool on project
-  * add check @import loop
 
 ## Usage
 
@@ -120,10 +120,7 @@ ihtml -p <project> [-o <directory>]
 
 Opens a server on a project:
 ```shell
-ihtml -p <project> -s [<PORT>] [-t <static files dir>]
-```
-
-## Examples
+ihtml -p <project> -s [<PORT>] [-t <static fs
 ```css
 /*
  *
