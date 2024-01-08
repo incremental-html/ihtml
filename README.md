@@ -61,8 +61,8 @@ TODO
     * `srcset`: "size" none
     * `srcset`: "size" "image.jpg"
   * `border`
-  * `margin`
-  * `padding`
+  * `margin` top bottom left right
+  * `padding` top bottom left right
   * `tag`
   * `wikitext`
   * `code` (with highlight_string)
