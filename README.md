@@ -47,28 +47,28 @@ and then:
 TODO
 
 ## TODO
-* document functions:
-  * done: url(file) -> string
-  * json(string) -> struct
-  * yaml(string) -> struct
-  * json-path(struct, json-path) -> string
-* add property `attribute`:
-  * `attribute: "title" "some text";` to change content
-  * `attribute: "title" "";` to empty
-  * `attribute: "title" none;` to remove the attribute
-  * `attribute: "title" visibile/hidden;` to hide (may be shown again)
-  * `attribute: "title" "My new content" content;` to concatenate
-* add property `ldjson`:
-  * `ldjson: "./title" "My title"` to set path
-* add property `style`:
-  * `style: background-color "black"` to set style
-  * `style: background-color none`
+* ccs functions:
+  * <string> url(<string> file) (done)
+  * <json> json(<string> code)
+  * <json> yaml(<string> code)
+  * <string> json-path(<json> data, <string> path)
+  * <mixed> var(<label> name)
+* ccs properties:
+  * `attribute`:
+    * `attribute: "title" "some text";` to change content
+    * `attribute: "title" "";` to empty
+    * `attribute: "title" none;` to remove the attribute
+    * `attribute: "title" visibile/hidden;` to hide (may be shown again)
+    * `attribute: "title" "My new content" content;` to concatenate
+  * `ldjson`:
+    * `ldjson: "./title" "My title"` to set path
+  * `style`:
+    * `style: background-color "black"` to set style
+    * `style: background-color none`
 * functionalities
-  * add CSS vars(--var) function support
   * support for rules: border, margin, padding, wikitext
   * add javascript on* attributes support
     * .element { onclick = "execMe();" }
-  * add support for rule `attributes: A B, C D`
   * add `content` attribute support
   * add `code` rule support
 * internal selector navigation supports
