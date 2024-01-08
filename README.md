@@ -73,7 +73,7 @@ TODO
   * margin
   * padding
   * wikitext
-  * code
+  * code (with highlight_string)
   * `url` parts support (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
     * link[href],
     * script[src],
