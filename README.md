@@ -63,6 +63,7 @@ TODO
   * `border`
   * `margin`
   * `padding`
+  * `tag`
   * `wikitext`
   * `code` (with highlight_string)
   * css-white-space
