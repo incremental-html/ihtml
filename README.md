@@ -47,6 +47,11 @@ and then:
 TODO
 
 ## TODO
+* document functions:
+  * done: url(file) -> string
+  * json(string) -> struct
+  * yaml(string) -> struct
+  * json-path(struct, json-path) -> string
 * add property `attribute`:
   * `attribute: "title" "some text";` to change content
   * `attribute: "title" "";` to empty
