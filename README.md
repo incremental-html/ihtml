@@ -47,30 +47,43 @@ and then:
 TODO
 
 ## TODO
-* add property `attribute`:
-  * `attribute: "title" "some text";` to change content
-  * `attribute: "title" "";` to empty
-  * `attribute: "title" none;` to remove the attribute
-  * `attribute: "title" visibile/hidden;` to hide (may be shown again)
-  * `attribute: "title" "My new content" content;` to concatenate
-* add property `ldjson`:
-  * `ldjson: "./title" "My title"` to set path
-* add property `style`:
-  * `style: background-color "black"` to set style
-  * `style: background-color none`
-* functionalities
-  * add CSS vars(--var) function support
-  * support for rules: border, margin, padding, wikitext
-  * add javascript on* attributes support
-    * .element { onclick = "execMe();" }
-  * add support for rule `attributes: A B, C D`
-  * add `content` attribute support
-  * add `code` rule support
-* internal selector navigation supports
-  * add `<style>` support
-  * add `[srcset]` support
-  * add `ld+json` navigation support
-  * add `url` parts support (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
+* `.ihtml` file support
+  * contains .html source and .ccs to apply. Or an .html with content tag or link contentsheet
+  * must replace resources and errors in project
+* ccs properties:
+  * `attribute`:
+    * `attribute: "title" "some text";` to change content
+    * `attribute: "title" "";` to empty
+    * `attribute: "title" none;` to remove the attribute
+    * `attribute: "title" visibile/hidden;` to hide (may be shown again)
+    * `attribute: "title" "My new content" content;` to concatenate
+  * `style`:
+    * `style`: background-color "black"` to set style
+    * `style`: background-color none`
+  * `srcset`
+    * `srcset`: "size" none
+    * `srcset`: "size" "image.jpg"
+  * `border`
+  * `margin` top bottom left right
+  * `padding` top bottom left right
+  * `tag`
+  * `wikitext`
+  * `code` (with highlight_string)
+  * css-white-space
+    * minified, normal, compact
+  * js-white-space
+    * minified, normal, compact
+  * `on`
+    * `on: click "execMe();"`
+* ccs functions:
+  * content(): opening tag, closing tag, tag name ("div")
+  * `<string> url(<string> file)` (done)
+  * `<json> json(<string> code)`
+  * `<json> yaml(<string> code)`
+  * `<string> json-select(<json> data, <string> path)`
+  * `<string> json-set(<json> data, <string> path, <mixed> value)`
+  * `<string> uri-set(<URI> data, <string> path, <mixed> value)`
+    * (Valid URL attributes - https://www.w3.org/TR/2017/REC-html52-20171214/fullindex.html#attributes-table)
     * link[href],
     * script[src],
     * a[href],
@@ -78,17 +91,13 @@ TODO
     * source[src],
     * video[poster]
     * and other URI
+  *  `<string> html-set(<dom> data, <string> selector)`
+  * `<string> style-set(<string> content, <string> selector, <string> property, <string> value)`
+  * `<mixed> var(<label> name)`
+  * `<URI> uri(<string> url)`
 * integration
   * add **SASS/SCSS** example
   * add **PurgeCSS** integration
-* refactor
-  * move to a REAL html5 parser (like the Chrome one)
-  * add white-space support for inline CSSs and JSs
-  * add full website example to be used as unit test
-    * add `blog posts` example
-  * add incremental caching (after benchmarks and choice of platform)
-  * add dependency tool on project
-  * add check @import loop
 
 ## Usage
 
@@ -115,10 +124,7 @@ ihtml -p <project> [-o <directory>]
 
 Opens a server on a project:
 ```shell
-ihtml -p <project> -s [<PORT>] [-t <static files dir>]
-```
-
-## Examples
+ihtml -p <project> -s [<PORT>] [-t <static fs
 ```css
 /*
  *
