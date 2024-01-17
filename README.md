@@ -7,7 +7,7 @@ A template engine
 
 ```sudo curl -JL https://clue.engineering/phar-composer-latest.phar -o /usr/local/bin/phar-composer
 
-sudo phar-composer build https://github.com/incremental-html/ihtml.git:dev-master /usr/local/bin/ihtml
+phar-composer install https://github.com/incremental-html/ihtml.git
 ```
 
 ## Functionalities
