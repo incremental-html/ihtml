@@ -57,6 +57,15 @@ TODO
     * `attribute: "title" none;` to remove the attribute
     * `attribute: "title" visibile/hidden;` to hide (may be shown again)
     * `attribute: "title" "My new content" content;` to concatenate
+  * `on`
+    * `on: click "execMe();"`
+  * first extension ✨: smart properties 🤓 package 📦
+    * `onclick` end events family
+    * attributes fanily
+    * css famyly properties
+    * `onclick: "execMe();"`
+    * `href: "url"`
+    * `background-color: black`
   * `style`:
     * `style`: background-color "black"` to set style
     * `style`: background-color none`
@@ -73,8 +82,6 @@ TODO
     * minified, normal, compact
   * js-white-space
     * minified, normal, compact
-  * `on`
-    * `on: click "execMe();"`
 * ccs functions:
   * content(): opening tag, closing tag, tag name ("div")
   * `<string> url(<string> file)` (done)
